@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=VMware Player
+Type=Application
+Comment=VMware Player
+Comment[pl]=VMware Player
+Exec=vmware
+Icon=VMware-player.png
+Terminal=false
+Categories=Utility;Emulator;
+Encoding=UTF-8
+# vi: encoding=utf-8
