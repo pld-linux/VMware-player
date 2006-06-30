@@ -31,7 +31,7 @@ License:	custom, non-distributable
 Group:		Applications/Emulators
 Source0:	http://download3.vmware.com/software/wkst/%{name}-%{_ver}-%{_build}.tar.gz
 Source0:	http://download3.vmware.com/software/vmplayer/%{name}-%{_ver}-%{_build}.tar.gz
-# NoSource0-md5:	6101deb381beb49f5b99cb1f8a81a532
+# NoSource0-md5:58d0aab1f3303dfb5354a929bcf1b0e9
 Source1:	http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{_urel}.tar.gz
 # Source1-md5:	b3ce457f5b9ae8b606fd70f56084877d
 Source2:	%{name}.init
