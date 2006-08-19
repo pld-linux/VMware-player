@@ -16,10 +16,10 @@
 %undefine	with_userspace
 %endif
 #
-%define		_ver	1.0.1
-%define		_build	19317
-%define		_rel	0.2
-%define		_urel	101
+%define		_ver	1.0.2
+%define		_build	29634
+%define		_rel	0.1
+%define		_urel	104
 %define		_ccver	%(rpm -q --qf "%{VERSION}" gcc)
 #
 Summary:	VMware player
@@ -29,11 +29,10 @@ Version:	%{_ver}.%{_build}
 Release:	%{_rel}
 License:	custom, non-distributable
 Group:		Applications/Emulators
-Source0:	http://download3.vmware.com/software/wkst/%{name}-%{_ver}-%{_build}.tar.gz
 Source0:	http://download3.vmware.com/software/vmplayer/%{name}-%{_ver}-%{_build}.tar.gz
-# NoSource0-md5:58d0aab1f3303dfb5354a929bcf1b0e9
+# NoSource0-md5:c2b781e450c9c0b51820ca6b428d9773
 Source1:	http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{_urel}.tar.gz
-# Source1-md5:	b3ce457f5b9ae8b606fd70f56084877d
+# Source1-md5:	8cba16d3f6b3723b43d555a5f7cbf850
 Source2:	%{name}.init
 Source3:	%{name}-vmnet.conf
 Source4:	%{name}.png
