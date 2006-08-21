@@ -121,7 +121,7 @@ VMware SMB utilities.
 %description samba -l pl
 Narzêdzia VMware do SMB.
 
-%package -n kernel-misc-vmmon
+%package -n kernel%{_alt_kernel}-misc-vmmon
 Summary:	Kernel module for VMware Player
 Summary(pl):	Modu³ j±dra dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
@@ -134,13 +134,13 @@ Requires(postun):	%releq_kernel_up
 %endif
 Provides:	kernel(vmmon) = %{version}-%{_rel}
 
-%description -n kernel-misc-vmmon
+%description -n kernel%{_alt_kernel}-misc-vmmon
 Kernel modules for VMware Player - vmmon.
 
-%description -n kernel-misc-vmmon -l pl
+%description -n kernel%{_alt_kernel}-misc-vmmon -l pl
 Modu³y j±dra dla VMware Player - vmmon.
 
-%package -n kernel-misc-vmnet
+%package -n kernel%{_alt_kernel}-misc-vmnet
 Summary:	Kernel module for VMware Player
 Summary(pl):	Modu³ j±dra dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
@@ -153,13 +153,13 @@ Requires(postun):	%releq_kernel_up
 %endif
 Provides:	kernel(vmnet) = %{version}-%{_rel}
 
-%description -n kernel-misc-vmnet
+%description -n kernel%{_alt_kernel}-misc-vmnet
 Kernel modules for VMware Player - vmnet.
 
-%description -n kernel-misc-vmnet -l pl
+%description -n kernel%{_alt_kernel}-misc-vmnet -l pl
 Modu³y j±dra dla VMware Player - vmnet.
 
-%package -n kernel-smp-misc-vmmon
+%package -n kernel%{_alt_kernel}-smp-misc-vmmon
 Summary:	SMP kernel module for VMware Player
 Summary(pl):	Modu³ j±dra SMP dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
@@ -172,13 +172,13 @@ Requires(postun):	%releq_kernel_smp
 %endif
 Provides:	kernel(vmmon) = %{version}-%{_rel}
 
-%description -n kernel-smp-misc-vmmon
+%description -n kernel%{_alt_kernel}-smp-misc-vmmon
 SMP kernel modules fov VMware Player - vmmon-smp.
 
-%description -n kernel-smp-misc-vmmon -l pl
+%description -n kernel%{_alt_kernel}-smp-misc-vmmon -l pl
 Modu³y j±dra SMP dla VMware Player - vmmon-smp.
 
-%package -n kernel-smp-misc-vmnet
+%package -n kernel%{_alt_kernel}-smp-misc-vmnet
 Summary:	SMP kernel module for VMware Player
 Summary(pl):	Modu³ j±dra SMP dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
@@ -191,10 +191,10 @@ Requires(postun):	%releq_kernel_smp
 %endif
 Provides:	kernel(vmnet) = %{version}-%{_rel}
 
-%description -n kernel-smp-misc-vmnet
+%description -n kernel%{_alt_kernel}-smp-misc-vmnet
 SMP kernel module for VMware Player - vmnet-smp.
 
-%description -n kernel-smp-misc-vmnet -l pl
+%description -n kernel%{_alt_kernel}-smp-misc-vmnet -l pl
 Modu³y j±dra SMP dla VMware Player - vmnet-smp.
 
 %package -n kernel24-misc-vmmon
@@ -469,28 +469,28 @@ if [ "$1" = "0" ]; then
 	/sbin/chkconfig --del vmnet
 fi
 
-%post	-n kernel-misc-vmmon
+%post	-n kernel%{_alt_kernel}-misc-vmmon
 %depmod %{_kernel_ver}
 
-%postun -n kernel-misc-vmmon
+%postun -n kernel%{_alt_kernel}-misc-vmmon
 %depmod %{_kernel_ver}
 
-%post	-n kernel-misc-vmnet
+%post	-n kernel%{_alt_kernel}-misc-vmnet
 %depmod %{_kernel_ver}
 
-%postun -n kernel-misc-vmnet
+%postun -n kernel%{_alt_kernel}-misc-vmnet
 %depmod %{_kernel_ver}
 
-%post	-n kernel-smp-misc-vmmon
+%post	-n kernel%{_alt_kernel}-smp-misc-vmmon
 %depmod %{_kernel_ver}smp
 
-%postun -n kernel-smp-misc-vmmon
+%postun -n kernel%{_alt_kernel}-smp-misc-vmmon
 %depmod %{_kernel_ver}smp
 
-%post	-n kernel-smp-misc-vmnet
+%post	-n kernel%{_alt_kernel}-smp-misc-vmnet
 %depmod %{_kernel_ver}smp
 
-%postun -n kernel-smp-misc-vmnet
+%postun -n kernel%{_alt_kernel}-smp-misc-vmnet
 %depmod %{_kernel_ver}smp
 
 %post	-n kernel24-misc-vmmon
@@ -582,20 +582,20 @@ fi
 
 %if %{with kernel}
 %if %{without kernel24}
-%files -n kernel-misc-vmmon
+%files -n kernel%{_alt_kernel}-misc-vmmon
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmmon.ko*
 
-%files -n kernel-misc-vmnet
+%files -n kernel%{_alt_kernel}-misc-vmnet
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmnet.ko*
 
 %if %{with smp} && %{with dist_kernel}
-%files	-n kernel-smp-misc-vmmon
+%files	-n kernel%{_alt_kernel}-smp-misc-vmmon
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}smp/misc/vmmon.ko*
 
-%files	-n kernel-smp-misc-vmnet
+%files	-n kernel%{_alt_kernel}-smp-misc-vmnet
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}smp/misc/vmnet.ko*
 %endif
