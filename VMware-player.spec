@@ -436,6 +436,7 @@ touch $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases
 touch $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases~
 
 install lib/share/pixmaps/* $RPM_BUILD_ROOT%{_libdir}/vmware/share/pixmaps
+install lib/share/EULA.txt $RPM_BUILD_ROOT%{_libdir}/vmware/share
 
 install bin/*-* $RPM_BUILD_ROOT%{_bindir}
 install lib/bin/vmware-vmx $RPM_BUILD_ROOT%{_libdir}/vmware/bin
