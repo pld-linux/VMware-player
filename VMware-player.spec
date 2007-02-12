@@ -24,7 +24,7 @@
 %define		_ccver	%(rpm -q --qf "%{VERSION}" gcc)
 #
 Summary:	VMware player
-Summary(pl):	VMware player - wirtualna platforma dla stacji roboczej
+Summary(pl.UTF-8):   VMware player - wirtualna platforma dla stacji roboczej
 Name:		VMware-player
 Version:	%{_ver}.%{_build}
 Release:	%{_rel}
@@ -62,27 +62,27 @@ multiple guest operating systems to run concurrently on a single
 standard PC, without repartitioning or rebooting, and without
 significant loss of performance.
 
-%description -l pl
+%description -l pl.UTF-8
 VMware Player Virtual Platform to cienka warstwa oprogramowania
-pozwalaj±ca na jednoczesne dzia³anie wielu go¶cinnych systemów
-operacyjnych na jednym zwyk³ym PC, bez repartycjonowania ani
-rebootowania, bez znacznej utraty wydajno¶ci.
+pozwalajÄ…ca na jednoczesne dziaÅ‚anie wielu goÅ›cinnych systemÃ³w
+operacyjnych na jednym zwykÅ‚ym PC, bez repartycjonowania ani
+rebootowania, bez znacznej utraty wydajnoÅ›ci.
 
 %package debug
 Summary:	VMware debug utility
-Summary(pl):	Narzêdzie VMware do odpluskwiania
+Summary(pl.UTF-8):   NarzÄ™dzie VMware do odpluskwiania
 Group:		Applications/Emulators
 Requires:	%{name} = %{version}-%{release}
 
 %description debug
 VMware debug utility.
 
-%description debug -l pl
-Narzêdzie VMware do odpluskwiania.
+%description debug -l pl.UTF-8
+NarzÄ™dzie VMware do odpluskwiania.
 
 %package help
 Summary:	VMware Player help files
-Summary(pl):	Pliki pomocy dla VMware Player
+Summary(pl.UTF-8):   Pliki pomocy dla VMware Player
 Group:		Applications/Emulators
 Requires:	%{name} = %{version}-%{release}
 Requires:	mozilla
@@ -90,12 +90,12 @@ Requires:	mozilla
 %description help
 VMware Player help files.
 
-%description help -l pl
+%description help -l pl.UTF-8
 Pliki pomocy dla VMware Player.
 
 %package networking
 Summary:	VMware networking utilities
-Summary(pl):	Narzêdzia VMware do obs³ugi sieci
+Summary(pl.UTF-8):   NarzÄ™dzia VMware do obsÅ‚ugi sieci
 Group:		Applications/Emulators
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name} = %{version}-%{release}
@@ -105,24 +105,24 @@ Obsoletes:	VMware-Player-samba
 %description networking
 VMware networking utilities.
 
-%description networking -l pl
-Narzêdzia VMware do obs³ugi sieci.
+%description networking -l pl.UTF-8
+NarzÄ™dzia VMware do obsÅ‚ugi sieci.
 
 %package samba
 Summary:	VMware SMB utilities
-Summary(pl):	Narzêdzia VMware do SMB
+Summary(pl.UTF-8):   NarzÄ™dzia VMware do SMB
 Group:		Applications/Emulators
 Requires:	%{name} = %{version}-%{release}
 
 %description samba
 VMware SMB utilities.
 
-%description samba -l pl
-Narzêdzia VMware do SMB.
+%description samba -l pl.UTF-8
+NarzÄ™dzia VMware do SMB.
 
 %package -n kernel%{_alt_kernel}-misc-vmmon
 Summary:	Kernel module for VMware Player
-Summary(pl):	Modu³ j±dra dla VMware Player
+Summary(pl.UTF-8):   ModuÅ‚ jÄ…dra dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
@@ -136,12 +136,12 @@ Provides:	kernel(vmmon) = %{version}-%{_rel}
 %description -n kernel%{_alt_kernel}-misc-vmmon
 Kernel modules for VMware Player - vmmon.
 
-%description -n kernel%{_alt_kernel}-misc-vmmon -l pl
-Modu³y j±dra dla VMware Player - vmmon.
+%description -n kernel%{_alt_kernel}-misc-vmmon -l pl.UTF-8
+ModuÅ‚y jÄ…dra dla VMware Player - vmmon.
 
 %package -n kernel%{_alt_kernel}-misc-vmnet
 Summary:	Kernel module for VMware Player
-Summary(pl):	Modu³ j±dra dla VMware Player
+Summary(pl.UTF-8):   ModuÅ‚ jÄ…dra dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
@@ -155,12 +155,12 @@ Provides:	kernel(vmnet) = %{version}-%{_rel}
 %description -n kernel%{_alt_kernel}-misc-vmnet
 Kernel modules for VMware Player - vmnet.
 
-%description -n kernel%{_alt_kernel}-misc-vmnet -l pl
-Modu³y j±dra dla VMware Player - vmnet.
+%description -n kernel%{_alt_kernel}-misc-vmnet -l pl.UTF-8
+ModuÅ‚y jÄ…dra dla VMware Player - vmnet.
 
 %package -n kernel%{_alt_kernel}-smp-misc-vmmon
 Summary:	SMP kernel module for VMware Player
-Summary(pl):	Modu³ j±dra SMP dla VMware Player
+Summary(pl.UTF-8):   ModuÅ‚ jÄ…dra SMP dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
@@ -174,12 +174,12 @@ Provides:	kernel(vmmon) = %{version}-%{_rel}
 %description -n kernel%{_alt_kernel}-smp-misc-vmmon
 SMP kernel modules fov VMware Player - vmmon-smp.
 
-%description -n kernel%{_alt_kernel}-smp-misc-vmmon -l pl
-Modu³y j±dra SMP dla VMware Player - vmmon-smp.
+%description -n kernel%{_alt_kernel}-smp-misc-vmmon -l pl.UTF-8
+ModuÅ‚y jÄ…dra SMP dla VMware Player - vmmon-smp.
 
 %package -n kernel%{_alt_kernel}-smp-misc-vmnet
 Summary:	SMP kernel module for VMware Player
-Summary(pl):	Modu³ j±dra SMP dla VMware Player
+Summary(pl.UTF-8):   ModuÅ‚ jÄ…dra SMP dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
@@ -193,12 +193,12 @@ Provides:	kernel(vmnet) = %{version}-%{_rel}
 %description -n kernel%{_alt_kernel}-smp-misc-vmnet
 SMP kernel module for VMware Player - vmnet-smp.
 
-%description -n kernel%{_alt_kernel}-smp-misc-vmnet -l pl
-Modu³y j±dra SMP dla VMware Player - vmnet-smp.
+%description -n kernel%{_alt_kernel}-smp-misc-vmnet -l pl.UTF-8
+ModuÅ‚y jÄ…dra SMP dla VMware Player - vmnet-smp.
 
 %package -n kernel24-misc-vmmon
 Summary:	Kernel module for VMware Player
-Summary(pl):	Modu³ j±dra dla VMware Player
+Summary(pl.UTF-8):   ModuÅ‚ jÄ…dra dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
@@ -212,12 +212,12 @@ Provides:	kernel(vmmon) = %{version}-%{_rel}
 %description -n kernel24-misc-vmmon
 Kernel modules for VMware Player - vmmon.
 
-%description -n kernel24-misc-vmmon -l pl
-Modu³y j±dra dla VMware Player - vmmon.
+%description -n kernel24-misc-vmmon -l pl.UTF-8
+ModuÅ‚y jÄ…dra dla VMware Player - vmmon.
 
 %package -n kernel24-misc-vmnet
 Summary:	Kernel module for VMware Player
-Summary(pl):	Modu³ j±dra dla VMware Player
+Summary(pl.UTF-8):   ModuÅ‚ jÄ…dra dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
@@ -231,12 +231,12 @@ Provides:	kernel(vmnet) = %{version}-%{_rel}
 %description -n kernel24-misc-vmnet
 Kernel modules for VMware Player - vmnet.
 
-%description -n kernel24-misc-vmnet -l pl
-Modu³y j±dra dla VMware Player - vmnet.
+%description -n kernel24-misc-vmnet -l pl.UTF-8
+ModuÅ‚y jÄ…dra dla VMware Player - vmnet.
 
 %package -n kernel24-smp-misc-vmmon
 Summary:	SMP kernel module for VMware Player
-Summary(pl):	Modu³ j±dra SMP dla VMware Player
+Summary(pl.UTF-8):   ModuÅ‚ jÄ…dra SMP dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
@@ -250,12 +250,12 @@ Provides:	kernel(vmmon) = %{version}-%{_rel}
 %description -n kernel24-smp-misc-vmmon
 SMP kernel modules fov VMware Player - vmmon-smp.
 
-%description -n kernel24-smp-misc-vmmon -l pl
-Modu³y j±dra SMP dla VMware Player - vmmon-smp.
+%description -n kernel24-smp-misc-vmmon -l pl.UTF-8
+ModuÅ‚y jÄ…dra SMP dla VMware Player - vmmon-smp.
 
 %package -n kernel24-smp-misc-vmnet
 Summary:	SMP kernel module for VMware Player
-Summary(pl):	Modu³ j±dra SMP dla VMware Player
+Summary(pl.UTF-8):   ModuÅ‚ jÄ…dra SMP dla VMware Player
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
@@ -269,8 +269,8 @@ Provides:	kernel(vmnet) = %{version}-%{_rel}
 %description -n kernel24-smp-misc-vmnet
 SMP kernel module for VMware Player - vmnet-smp.
 
-%description -n kernel24-smp-misc-vmnet -l pl
-Modu³y j±dra SMP dla VMware Player - vmnet-smp.
+%description -n kernel24-smp-misc-vmnet -l pl.UTF-8
+ModuÅ‚y jÄ…dra SMP dla VMware Player - vmnet-smp.
 
 %prep
 %setup -q -n vmware-player-distrib -a1
