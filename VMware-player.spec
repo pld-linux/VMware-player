@@ -177,7 +177,7 @@ rm -rf built
 mkdir built
 
 for mod in vmmon vmnet ; do
-	for cfg in %{buildconfigs}; do
+	for cfg in %{?with_dist_kernel:dist}%{!?with_dist_kernel:nondist}; do
 		if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
 			exit 1
 		fi
@@ -236,19 +236,9 @@ install -d \
 %if %{with kernel}
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/misc
 
-cd vmware-any-any-update%{_urel}
-
-install built/vmmon.o \
-	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/misc/vmmon.o
-install built/vmnet.o \
-	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/misc/vmnet.o
-%if %{with smp} && %{with dist_kernel}
-install built/vmmon-smp.o \
-	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/misc/vmmon.o
-install built/vmnet-smp.o \
-	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/misc/vmnet.o
-%endif
-
+cd vmware-any-any-update%{_urel}/built
+install vmmon* $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/misc/vmmon.ko
+install vmnet* $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/misc/vmnet.ko
 cd -
 %endif
 
@@ -264,7 +254,7 @@ touch $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases
 touch $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases~
 
 install lib/share/pixmaps/* $RPM_BUILD_ROOT%{_libdir}/vmware/share/pixmaps
-install lib/share/EULA.txt $RPM_BUILD_ROOT%{_libdir}/vmware/share
+install doc/EULA $RPM_BUILD_ROOT%{_libdir}/vmware/share
 
 install bin/*-* $RPM_BUILD_ROOT%{_bindir}
 install lib/bin/vmware-vmx $RPM_BUILD_ROOT%{_libdir}/vmware/bin
@@ -363,16 +353,6 @@ fi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vmware/vmnet8/nat/nat.conf
 %verify(not md5 mtime size) %{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases*
 
-%if 0
-%files samba
-%defattr(644,root,root,755)
-%doc lib/configurator/vmnet-smb.conf
-%attr(755,root,root) %{_bindir}/vmware-nmbd
-%attr(755,root,root) %{_bindir}/vmware-smbd
-%attr(755,root,root) %{_bindir}/vmware-smbpasswd
-%attr(755,root,root) %{_bindir}/vmware-smbpasswd.bin
-%{_libdir}/vmware/smb
-%endif
 %endif
 
 %if %{with kernel}
