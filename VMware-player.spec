@@ -14,7 +14,7 @@
 #
 %define		_ver	2.0.0
 %define		_build	45731
-%define		_rel	0.1
+%define		_rel	0.2
 %define		_urel	110
 %define		_ccver	%(rpm -q --qf "%{VERSION}" gcc)
 #
@@ -225,7 +225,7 @@ install -d \
 	$RPM_BUILD_ROOT%{_sysconfdir}/vmware \
 	$RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/{nat,dhcpd} \
 	$RPM_BUILD_ROOT%{_bindir} \
-	$RPM_BUILD_ROOT%{_libdir}/vmware/{bin,share/pixmaps} \
+	$RPM_BUILD_ROOT%{_libdir}/vmware/{bin,lib,share/pixmaps} \
 	$RPM_BUILD_ROOT%{_mandir} \
 	$RPM_BUILD_ROOT%{_pixmapsdir} \
 	$RPM_BUILD_ROOT%{_desktopdir} \
@@ -258,6 +258,8 @@ install doc/EULA $RPM_BUILD_ROOT%{_libdir}/vmware/share
 
 install bin/*-* $RPM_BUILD_ROOT%{_bindir}
 install lib/bin/vmware-vmx $RPM_BUILD_ROOT%{_libdir}/vmware/bin
+install lib/lib/libvmwarebase.so.0/libvmwarebase.so.0 $RPM_BUILD_ROOT%{_libdir}
+install lib/lib/libvmwareui.so.0/libvmwareui.so.0 $RPM_BUILD_ROOT%{_libdir}
 
 cp -r	lib/{bin-debug,config,help*,messages,xkeymap} \
 	$RPM_BUILD_ROOT%{_libdir}/vmware
@@ -270,7 +272,7 @@ EOF
 %if %{with internal_libs}
 install bin/vmplayer $RPM_BUILD_ROOT%{_bindir}
 install lib/bin/vmplayer $RPM_BUILD_ROOT%{_libdir}/vmware/bin
-cp -r	lib/lib $RPM_BUILD_ROOT%{_libdir}/vmware
+install	lib/lib/* $RPM_BUILD_ROOT%{_libdir}/vmware/lib
 cp -r	lib/libconf $RPM_BUILD_ROOT%{_libdir}/vmware
 %else
 install lib/bin/vmplayer $RPM_BUILD_ROOT%{_bindir}
@@ -309,18 +311,21 @@ fi
 %dir %{_sysconfdir}/vmware
 %{_sysconfdir}/vmware/locations
 %attr(755,root,root) %{_bindir}/vmplayer
+%attr(755,root,root) %{_libdir}/libvmwarebase.so.*
+%attr(755,root,root) %{_libdir}/libvmwareui.so.*
 %dir %{_libdir}/vmware
 %dir %{_libdir}/vmware/bin
+%dir %{_libdir}/vmware/lib
 # warning: SUID !!!
 %attr(4755,root,root) %{_libdir}/vmware/bin/vmware-vmx
 %{_libdir}/vmware/config
 %if %{with internal_libs}
 %attr(755,root,root) %{_libdir}/vmware/bin/vmware
-%dir %{_libdir}/vmware/lib
 %{_libdir}/vmware/lib/lib*
 %attr(755,root,root) %{_libdir}/vmware/lib/wrapper-gtk24.sh
 %endif
 %dir %{_libdir}/vmware/messages
+%lang(en) %{_libdir}/vmware/messages/en
 %lang(ja) %{_libdir}/vmware/messages/ja
 %{_libdir}/vmware/share
 %{_libdir}/vmware/xkeymap
@@ -349,6 +354,8 @@ fi
 %attr(755,root,root) %{_bindir}/vmnet-sniffer
 %attr(755,root,root) %{_bindir}/vmware-ping
 %dir %{_sysconfdir}/vmware/vmnet8
+%dir %{_sysconfdir}/vmware/vmnet8/dhcpd
+%dir %{_sysconfdir}/vmware/vmnet8/nat
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.conf
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vmware/vmnet8/nat/nat.conf
 %verify(not md5 mtime size) %{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases*
