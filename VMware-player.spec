@@ -105,18 +105,6 @@ VMware networking utilities.
 %description networking -l pl.UTF-8
 Narzędzia VMware do obsługi sieci.
 
-%package samba
-Summary:	VMware SMB utilities
-Summary(pl.UTF-8):	Narzędzia VMware do SMB
-Group:		Applications/Emulators
-Requires:	%{name} = %{version}-%{release}
-
-%description samba
-VMware SMB utilities.
-
-%description samba -l pl.UTF-8
-Narzędzia VMware do SMB.
-
 %package -n kernel%{_alt_kernel}-misc-vmmon
 Summary:	Kernel module for VMware Player
 Summary(pl.UTF-8):	Moduł jądra dla VMware Player
