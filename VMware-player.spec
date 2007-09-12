@@ -27,8 +27,10 @@ License:	custom, non-distributable
 Group:		Applications/Emulators
 Source0:	http://download3.vmware.com/software/vmplayer/%{name}-%{_ver}-%{_build}.i386.tar.gz
 # NoSource0-md5:	090b02f6a49dd3a4e8617f68e1d2dc7b
+NoSource:	0
 Source1:	http://download3.vmware.com/software/vmplayer/%{name}-%{_ver}-%{_build}.x86_64.tar.gz
 # NoSource1-md5:	2bfbc79f548f082818b44b980d9e1c71	
+NoSource:	1
 Source2:	http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{_urel}.tar.gz
 # Source2-md5:	6a0c8da95b4c25670c842939e5b92728
 Source3:	%{name}-vmnet.conf
