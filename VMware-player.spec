@@ -163,6 +163,9 @@ sed -i 's:vm_db_answer_LIBDIR:VM_LIBDIR:g;s:vm_db_answer_BINDIR:VM_BINDIR:g' bin
 cd vmware-any-any-update%{_urel}
 chmod u+w ../lib/bin/vmware-vmx ../lib/bin-debug/vmware-vmx ../bin/vmnet-bridge
 
+# hack until new any-any-update version available
+sed -i -e 's/#define.*VMMON_VERSION_V6.*/#define VMMON_VERSION_V6        (167 << 16 | 0)/g' vmmon-only/include/iocontrols_compat.h
+
 %if %{with kernel}
 rm -rf built
 mkdir built
