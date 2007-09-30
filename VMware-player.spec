@@ -49,6 +49,8 @@ BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
 Requires:	libgnomecanvasmm
 Requires:	libview >= 0.5.5-2
+# Requires:	openssl >= 0.9.7
+# Requires:	openssl < 0.9.8
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -246,7 +248,7 @@ touch $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases~
 cp -a lib/share/icons/hicolor/* $RPM_BUILD_ROOT%{_iconsdir}/hicolor
 
 install lib/share/pixmaps/* $RPM_BUILD_ROOT%{_libdir}/vmware/share/pixmaps
-install doc/EULA $RPM_BUILD_ROOT%{_libdir}/vmware/share
+install doc/EULA $RPM_BUILD_ROOT%{_libdir}/vmware/share/EULA.txt
 
 install bin/*-* $RPM_BUILD_ROOT%{_bindir}
 install lib/bin/vmware-vmx $RPM_BUILD_ROOT%{_libdir}/vmware/bin
