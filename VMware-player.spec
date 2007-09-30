@@ -12,10 +12,10 @@
 %undefine	with_userspace
 %endif
 #
-%define		_ver	2.0.0
-%define		_build	45731
-%define		_rel	0.2
-%define		_urel	110
+%define		_ver	2.0.1
+%define		_build	55017
+%define		_rel	0.1
+%define		_urel	113
 %define		_ccver	%(rpm -q --qf "%{VERSION}" gcc)
 #
 Summary:	VMware player
@@ -26,13 +26,13 @@ Release:	%{_rel}
 License:	custom, non-distributable
 Group:		Applications/Emulators
 Source0:	http://download3.vmware.com/software/vmplayer/%{name}-%{_ver}-%{_build}.i386.tar.gz
-# NoSource0-md5:	090b02f6a49dd3a4e8617f68e1d2dc7b
+# NoSource0-md5:	2d1b2d847cf002b2f418b94f5b973ecc
 NoSource:	0
 Source1:	http://download3.vmware.com/software/vmplayer/%{name}-%{_ver}-%{_build}.x86_64.tar.gz
-# NoSource1-md5:	2bfbc79f548f082818b44b980d9e1c71	
+# NoSource1-md5:	dca7a144e1a01c69387401e46e7e3b26
 NoSource:	1
 Source2:	http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{_urel}.tar.gz
-# Source2-md5:	6a0c8da95b4c25670c842939e5b92728
+# Source2-md5:	cb3f91f2196778e6d76d5a6697286d04
 Source3:	%{name}-vmnet.conf
 Source4:	%{name}.png
 Source5:	%{name}.desktop
@@ -49,8 +49,8 @@ BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
 Requires:	libgnomecanvasmm
 Requires:	libview >= 0.5.5-2
-# Requires:	openssl >= 0.9.7
-# Requires:	openssl < 0.9.8
+Requires:	openssl >= 0.9.7
+Requires:	openssl < 0.9.8
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -305,6 +305,8 @@ fi
 %dir %{_sysconfdir}/vmware
 %{_sysconfdir}/vmware/locations
 %attr(755,root,root) %{_bindir}/vmplayer
+%attr(755,root,root) %{_bindir}/vmware-acetool
+%attr(755,root,root) %{_bindir}/vm-support
 %attr(755,root,root) %{_libdir}/libvmwarebase.so.*
 %attr(755,root,root) %{_libdir}/libvmwareui.so.*
 %dir %{_libdir}/vmware
@@ -344,6 +346,7 @@ fi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vmware/vmnet.conf
 %attr(754,root,root) /etc/rc.d/init.d/vmnet
 %attr(755,root,root) %{_bindir}/vmnet-bridge
+%attr(755,root,root) %{_bindir}/vmnet-detect
 %attr(755,root,root) %{_bindir}/vmnet-dhcpd
 %attr(755,root,root) %{_bindir}/vmnet-natd
 %attr(755,root,root) %{_bindir}/vmnet-netifup
