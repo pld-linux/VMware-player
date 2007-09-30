@@ -217,6 +217,7 @@ install -d \
 	$RPM_BUILD_ROOT%{_libdir}/vmware/{bin,lib,share/pixmaps} \
 	$RPM_BUILD_ROOT%{_mandir} \
 	$RPM_BUILD_ROOT%{_pixmapsdir} \
+	$RPM_BUILD_ROOT%{_iconsdir}/hicolor \
 	$RPM_BUILD_ROOT%{_desktopdir} \
 	$RPM_BUILD_ROOT/etc/rc.d/init.d \
 	$RPM_BUILD_ROOT/var/run/vmware
@@ -241,6 +242,8 @@ install %{SOURCE7} $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.conf
 
 touch $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases
 touch $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases~
+
+cp -a lib/share/icons/hicolor/* $RPM_BUILD_ROOT%{_iconsdir}/hicolor
 
 install lib/share/pixmaps/* $RPM_BUILD_ROOT%{_libdir}/vmware/share/pixmaps
 install doc/EULA $RPM_BUILD_ROOT%{_libdir}/vmware/share
@@ -319,6 +322,8 @@ fi
 %{_libdir}/vmware/share
 %{_libdir}/vmware/xkeymap
 %attr(1777,root,root) %dir /var/run/vmware
+%{_iconsdir}/hicolor/*/*/*.png
+%{_iconsdir}/hicolor/*/*/*.svg
 %{_pixmapsdir}/*.png
 %{_desktopdir}/%{name}.desktop
 
