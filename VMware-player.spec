@@ -49,8 +49,8 @@ BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
 Requires:	libgnomecanvasmm
 Requires:	libview >= 0.5.5-2
-Requires:	openssl >= 0.9.7
 Requires:	openssl < 0.9.8
+Requires:	openssl >= 0.9.7
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -164,7 +164,7 @@ cd vmware-any-any-update%{_urel}
 chmod u+w ../lib/bin/vmware-vmx ../lib/bin-debug/vmware-vmx ../bin/vmnet-bridge
 
 # hack until new any-any-update version available
-sed -i -e 's/#define.*VMMON_VERSION_V6.*/#define VMMON_VERSION_V6        (167 << 16 | 0)/g' vmmon-only/include/iocontrols_compat.h
+sed -i -e 's/#define.*VMMON_VERSION_V6.*/#define VMMON_VERSION_V6		(167 << 16 | 0)/g' vmmon-only/include/iocontrols_compat.h
 
 %if %{with kernel}
 rm -rf built
@@ -216,7 +216,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with userspace}
 install -d \
-	$RPM_BUILD_ROOT%{_sysconfdir}/vmware \
+	$RPM_BUILD_ROOT%{_sysconfdir}/{modprobe.d,vmware} \
 	$RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/{nat,dhcpd} \
 	$RPM_BUILD_ROOT%{_bindir} \
 	$RPM_BUILD_ROOT%{_libdir}/vmware/{bin,lib,share/pixmaps} \
@@ -229,6 +229,8 @@ install -d \
 %endif
 
 %if %{with kernel}
+echo "options vmmon vmversion=16" > $RPM_BUILD_ROOT/etc/modprobe.d/%{name}-vmmon.conf
+
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/misc
 
 cd vmware-any-any-update%{_urel}/built
@@ -367,6 +369,7 @@ fi
 %if %{with kernel}
 %files -n kernel%{_alt_kernel}-misc-vmmon
 %defattr(644,root,root,755)
+/etc/modprobe.d/%{name}-vmmon.conf
 /lib/modules/%{_kernel_ver}/misc/vmmon.ko*
 
 %files -n kernel%{_alt_kernel}-misc-vmnet
