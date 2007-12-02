@@ -15,7 +15,7 @@
 %define		_ver	2.0.2
 %define		_build	59824
 %define		_rel	0.1
-%define		_urel	114
+%define		_urel	115
 %define		_ccver	%(rpm -q --qf "%{VERSION}" gcc)
 #
 Summary:	VMware player
@@ -32,7 +32,7 @@ Source1:	http://download3.vmware.com/software/vmplayer/%{name}-%{_ver}-%{_build}
 # NoSource1-md5:	f59a77f3e3b8e87591eff605c4bbb796
 NoSource:	1
 Source2:	http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{_urel}.tar.gz
-# Source2-md5:	34377ba9387804329c4a94619cc7efac
+# Source2-md5:	ab33ff7a799fee77f0f4ba5667cd4b9a
 Source3:	%{name}-vmnet.conf
 Source4:	%{name}.png
 Source5:	%{name}.desktop
