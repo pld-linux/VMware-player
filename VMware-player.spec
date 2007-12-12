@@ -84,7 +84,6 @@ Summary:	VMware Player help files
 Summary(pl.UTF-8):	Pliki pomocy dla VMware Player
 Group:		Applications/Emulators
 Requires:	%{name} = %{version}-%{release}
-Requires:	mozilla
 
 %description help
 VMware Player help files.
