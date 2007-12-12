@@ -49,7 +49,6 @@ BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
 Requires:	libgnomecanvasmm
 Requires:	libview >= 0.5.5-2
-Requires:	openssl < 0.9.8
 Requires:	openssl >= 0.9.7
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -272,10 +271,13 @@ EOF
 %if %{with internal_libs}
 install bin/vmplayer $RPM_BUILD_ROOT%{_bindir}
 install lib/bin/vmplayer $RPM_BUILD_ROOT%{_libdir}/vmware/bin
-install	lib/lib/* $RPM_BUILD_ROOT%{_libdir}/vmware/lib
+cp -r	lib/lib/* $RPM_BUILD_ROOT%{_libdir}/vmware/lib
 cp -r	lib/libconf $RPM_BUILD_ROOT%{_libdir}/vmware
 %else
 install lib/bin/vmplayer $RPM_BUILD_ROOT%{_bindir}
+install -d $RPM_BUILD_ROOT%{_libdir}/vmware/lib/lib{crypto,ssl}.so.0.9.7
+ln -s %{_libdir}/libcrypto.so $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libcrypto.so.0.9.7/libcrypto.so.0.9.7
+ln -s %{_libdir}/libssl.so $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libssl.so.0.9.7/libssl.so.0.9.7
 %endif
 
 # remove not needed files
@@ -320,12 +322,14 @@ fi
 %attr(755,root,root) %{_libdir}/libvmwareui.so.*
 %dir %{_libdir}/vmware
 %dir %{_libdir}/vmware/bin
-%dir %{_libdir}/vmware/lib
+%{_libdir}/vmware/lib
+# package old openssl (buggy but needed to work)
+%attr(755,root,root) %{_libdir}/vmware/lib/libcrypto.so.0.9.7/libcrypto.so.0.9.7
 # warning: SUID !!!
 %attr(4755,root,root) %{_libdir}/vmware/bin/vmware-vmx
 %{_libdir}/vmware/config
 %if %{with internal_libs}
-%attr(755,root,root) %{_libdir}/vmware/bin/vmware
+%attr(755,root,root) %{_libdir}/vmware/bin/vmplayer
 %{_libdir}/vmware/lib/lib*
 %attr(755,root,root) %{_libdir}/vmware/lib/wrapper-gtk24.sh
 %endif
