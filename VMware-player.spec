@@ -45,7 +45,7 @@ Source8:	%{name}.init
 Patch0:		%{name}-Makefile.patch
 Patch1:		%{name}-run_script.patch
 URL:		http://www.vmware.com/
-%{?with_dist_kernel:BuildRequires:	kernel-module-build >= 3:2.6.7}
+%{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7}
 BuildRequires:	libstdc++-devel
 BuildRequires:	rpm-perlprov
 BuildRequires:	rpmbuild(macros) >= 1.268
