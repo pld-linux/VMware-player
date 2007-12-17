@@ -1,7 +1,6 @@
-diff -urN vmmon-only.org/Makefile vmmon-only/Makefile
---- vmmon-only.org/Makefile	2004-05-12 16:49:05.732456176 +0200
-+++ vmmon-only/Makefile	2004-05-12 16:57:25.454486880 +0200
-@@ -14,9 +14,9 @@
+--- vmware-player-distrib/vmware-any-any-update115/vmmon-only/Makefile	2007-11-28 12:39:37.000000000 +0200
++++ vmware-player-distrib-new/vmware-any-any-update115/vmmon-only/Makefile	2007-12-17 02:21:20.665830641 +0200
+@@ -15,9 +15,9 @@
  VM_UNAME = $(shell uname -r)
  
  # Header directory for the running kernel
@@ -13,7 +12,7 @@ diff -urN vmmon-only.org/Makefile vmmon-only/Makefile
  
  DRIVER := vmmon
  
-@@ -44,32 +44,6 @@
+@@ -45,32 +45,6 @@
      VM_KBUILD_OUTPUT := $(O)
    endif
  endif
@@ -33,12 +32,12 @@ diff -urN vmmon-only.org/Makefile vmmon-only/Makefile
 -VM_DUMMY := $(shell echo >&2 '*** Hit ENTER to continue, or ^C to stop build.')
 -VM_DUMMY := $(shell read dummy)
 -else
--ifneq ($(call vm_check_file,$(BUILD_DIR)/Rules.make), yes)
--VM_KBUILD := 26
--else
+-ifeq ($(call vm_check_file,$(BUILD_DIR)/Rules.make), yes)
 -ifeq ($(shell if $(GREP) "^PATCHLEVEL = 4$$" $(BUILD_DIR)/Makefile > /dev/null 2>&1; then echo "yes"; fi), yes)
 -VM_KBUILD := 24
 -endif
+-else
+-VM_KBUILD := 26
 -endif
 -endif
 -endif
@@ -46,7 +45,7 @@ diff -urN vmmon-only.org/Makefile vmmon-only/Makefile
  endif
  
  ifndef VM_KBUILD_SHOWN
-@@ -90,9 +64,6 @@
+@@ -91,9 +65,6 @@
  
  VMCCVER := $(shell $(CC) -dumpversion)
  
@@ -56,9 +55,9 @@ diff -urN vmmon-only.org/Makefile vmmon-only/Makefile
  ifeq ($(VM_KBUILD), 24)
  DRIVER_KO := $(DRIVER).o
  else
-@@ -105,12 +76,6 @@
+@@ -109,28 +80,11 @@
  $(DRIVER): $(DRIVER_KO)
- 	cp -f $< $@
+ 	if [ $< -nt $@ ]; then cp -f $< $@; fi
  
 -# Pass gcc version down the chain, so we can detect if kernel attempts to use unapproved compiler
 -VM_CCVER := $(VMCCVER)
@@ -66,10 +65,8 @@ diff -urN vmmon-only.org/Makefile vmmon-only/Makefile
 -VM_CC := $(CC)
 -export VM_CC
 -
- ifneq ($(FORCE_CC), yes)
  MAKEOVERRIDES := $(filter-out CC=%,$(MAKEOVERRIDES))
- endif
-@@ -118,30 +83,9 @@
+ 
  $(DRIVER_KO):
  	make -C $(BUILD_DIR) SUBDIRS=$$PWD SRCROOT=$$PWD/$(SRCROOT) modules
  
@@ -83,6 +80,11 @@ diff -urN vmmon-only.org/Makefile vmmon-only/Makefile
 -endif
 -
 -endif
+-
+ VMWARE_DEBUG_REDIRECT := > /dev/null 2>&1
+ ifeq ($(VMWARE_DEBUG_AUTOCONF),y)
+ ifneq ($(VERSION),)
+@@ -157,17 +111,6 @@
  
  include $(SRCROOT)/Makefile.kernel
  
@@ -100,10 +102,9 @@ diff -urN vmmon-only.org/Makefile vmmon-only/Makefile
  else
  
  include $(SRCROOT)/Makefile.normal
-diff -urN vmnet-only.org/Makefile vmnet-only/Makefile
---- vmnet-only.org/Makefile	2004-05-12 16:49:09.091945456 +0200
-+++ vmnet-only/Makefile	2004-05-12 16:49:19.904301728 +0200
-@@ -14,9 +14,9 @@
+--- vmware-player-distrib/vmware-any-any-update115/vmnet-only/Makefile	2007-11-28 12:19:12.000000000 +0200
++++ vmware-player-distrib-new/vmware-any-any-update115/vmnet-only/Makefile	2007-12-17 02:19:06.321685076 +0200
+@@ -15,9 +15,9 @@
  VM_UNAME = $(shell uname -r)
  
  # Header directory for the running kernel
@@ -115,7 +116,7 @@ diff -urN vmnet-only.org/Makefile vmnet-only/Makefile
  
  DRIVER := vmnet
  
-@@ -47,29 +47,6 @@
+@@ -48,29 +48,6 @@
  ifeq ($(VM_KBUILD_OUTPUT),)
  VM_KBUILD_OUTPUT := $(BUILD_DIR)
  endif
@@ -145,7 +146,7 @@ diff -urN vmnet-only.org/Makefile vmnet-only/Makefile
  endif
  
  ifndef VM_KBUILD_SHOWN
-@@ -90,9 +67,6 @@
+@@ -91,9 +68,6 @@
  
  VMCCVER := $(shell $(CC) -dumpversion)
  
@@ -155,45 +156,3 @@ diff -urN vmnet-only.org/Makefile vmnet-only/Makefile
  ifeq ($(VM_KBUILD), 24)
  DRIVER_KO := $(DRIVER).o
  else
-@@ -102,41 +76,13 @@
- auto-build: $(DRIVER_KO)
- 	cp -f $< $(SRCROOT)/../$(DRIVER).o
- 
--# Pass gcc version down the chain, so we can detect if kernel attempts to use unapproved compiler
--VM_CCVER := $(VMCCVER)
--export VM_CCVER
--VM_CC := $(CC)
--export VM_CC
--
- MAKEOVERRIDES := $(filter-out CC=%,$(MAKEOVERRIDES))
- 
- $(DRIVER_KO):
- 	make -C $(BUILD_DIR) SUBDIRS=$$PWD SRCROOT=$$PWD/$(SRCROOT) modules
- 
--else
--
--ifneq ($(VM_CCVER), $(VMCCVER))
--$(warning *** Inappropriate build environment: you wanted to use gcc \
-- version $(VM_CCVER) while kernel attempts to use gcc version $(VMCCVER).)
--$(error For proper build you'll have to replace $(CC) with symbolic \
-- link to $(VM_CC))
--endif
--
--endif
--
- include $(SRCROOT)/Makefile.kernel
- 
--ifdef TOPDIR
--ifeq ($(VM_KBUILD), 24)
--
--O_TARGET := $(DRIVER).o
--
--obj-y := $($(DRIVER)-y)
--
--include $(TOPDIR)/Rules.make
--endif
--endif
--
- else
- 
- include $(SRCROOT)/Makefile.normal
