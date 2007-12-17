@@ -8,30 +8,33 @@
 #
 %include	/usr/lib/rpm/macros.perl
 
+%if %{without kernel}
+%undefine	with_dist_kernel
+%endif
 %ifarch %{x8664}
 %undefine	with_userspace
 %endif
 #
-%define		_ver	2.0.2
-%define		_build	59824
-%define		_rel	0.1
-%define		_urel	115
-%define		_ccver	%(rpm -q --qf "%{VERSION}" gcc)
+%define		ver		2.0.2
+%define		buildid	59824
+%define		urel	115
+%define		ccver	%(rpm -q --qf '%{V}' gcc)
+%define		_rel	0.10
 #
 Summary:	VMware player
 Summary(pl.UTF-8):	VMware player - wirtualna platforma dla stacji roboczej
 Name:		VMware-player
-Version:	%{_ver}.%{_build}
+Version:	%{ver}.%{buildid}
 Release:	%{_rel}
 License:	custom, non-distributable
 Group:		Applications/Emulators
-Source0:	http://download3.vmware.com/software/vmplayer/%{name}-%{_ver}-%{_build}.i386.tar.gz
+Source0:	http://download3.vmware.com/software/vmplayer/%{name}-%{ver}-%{buildid}.i386.tar.gz
 # NoSource0-md5:	0c108db615943d71b78f18826611acce
 NoSource:	0
-Source1:	http://download3.vmware.com/software/vmplayer/%{name}-%{_ver}-%{_build}.x86_64.tar.gz
+Source1:	http://download3.vmware.com/software/vmplayer/%{name}-%{ver}-%{buildid}.x86_64.tar.gz
 # NoSource1-md5:	f59a77f3e3b8e87591eff605c4bbb796
 NoSource:	1
-Source2:	http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{_urel}.tar.gz
+Source2:	http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{urel}.tar.gz
 # Source2-md5:	ab33ff7a799fee77f0f4ba5667cd4b9a
 Source3:	%{name}-vmnet.conf
 Source4:	%{name}.png
@@ -146,7 +149,7 @@ Moduły jądra dla VMware Player - vmnet.
 
 %prep
 %setup -q -n vmware-player-distrib -a2
-cd vmware-any-any-update%{_urel}
+cd vmware-any-any-update%{urel}
 tar xf vmmon.tar
 tar xf vmnet.tar
 cp -a vmmon-only{,.clean}
@@ -155,10 +158,27 @@ sed -e 's/filter x86_64%/filter x86_64% amd64% ia64%/' \
 	-i vmnet-only.clean/Makefile.kernel
 cd -
 
+%patch0 -p1
+%patch1 -p1
+
+# will never use these
+rm -f lib/libconf/lib/gtk-2.0/2.10.0/engines/*.a
+rm -f lib/libconf/lib/gtk-2.0/2.10.0/immodules/*.a
+rm -f lib/libconf/lib/gtk-2.0/2.10.0/loaders/*.a
+rm -f lib/libconf/lib/pango/1.5.0/modules/*.a
+
+%{__sed} -i -e 's#/build/.*/libconf/#%{_libdir}/vmware/libconf/#' \
+	lib/libconf/etc/gtk-2.0/{gdk-pixbuf.loaders,gtk.immodules} \
+	lib/libconf/etc/pango/{pango.modules,pangorc}
+
+# typo?
+%{__sed} -i -e 's#/etc/pango/pango/pangox.aliases#/etc/pango/pangox.aliases#' \
+	lib/libconf/etc/pango/pangorc
+
 %build
 sed -i 's:vm_db_answer_LIBDIR:VM_LIBDIR:g;s:vm_db_answer_BINDIR:VM_BINDIR:g' bin/vmplayer
 
-cd vmware-any-any-update%{_urel}
+cd vmware-any-any-update%{urel}
 chmod u+w ../lib/bin/vmware-vmx ../lib/bin-debug/vmware-vmx ../bin/vmnet-bridge
 
 # hack until new any-any-update version available
@@ -202,7 +222,7 @@ for mod in vmmon vmnet ; do
 			M=$PWD O=$PWD/o \
 			VM_KBUILD=26 \
 			%{?with_verbose:V=1} \
-			VM_CCVER=%{_ccver}
+			VM_CCVER=%{ccver}
 		mv -f $mod.ko ../built/$mod-$cfg.ko
 		cd -
 	done
@@ -232,7 +252,7 @@ echo "options vmmon vmversion=16" > $RPM_BUILD_ROOT%{_sysconfdir}/modprobe.d/%{n
 
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/misc
 
-cd vmware-any-any-update%{_urel}/built
+cd vmware-any-any-update%{urel}/built
 install vmmon* $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/misc/vmmon.ko
 install vmnet* $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/misc/vmnet.ko
 cd -
@@ -270,8 +290,8 @@ EOF
 %if %{with internal_libs}
 install bin/vmplayer $RPM_BUILD_ROOT%{_bindir}
 install lib/bin/vmplayer $RPM_BUILD_ROOT%{_libdir}/vmware/bin
-cp -r	lib/lib/* $RPM_BUILD_ROOT%{_libdir}/vmware/lib
-cp -r	lib/libconf $RPM_BUILD_ROOT%{_libdir}/vmware
+cp -a	lib/lib/* $RPM_BUILD_ROOT%{_libdir}/vmware/lib
+cp -a	lib/libconf $RPM_BUILD_ROOT%{_libdir}/vmware
 %else
 install lib/bin/vmplayer $RPM_BUILD_ROOT%{_bindir}
 install -d $RPM_BUILD_ROOT%{_libdir}/vmware/lib/lib{crypto,ssl}.so.0.9.7
@@ -285,6 +305,16 @@ rm -rf $RPM_BUILD_ROOT%{_bindir}/vmware-{config,uninstall}.pl $RPM_BUILD_ROOT%{_
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%if %{with internal_libs}
+%post
+gdk-pixbuf-query-loaders %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/loaders/*.so \
+	> %{_libdir}/vmware/libconf/etc/gtk-2.0/gdk-pixbuf.loaders
+gtk-query-immodules-2.0 %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/immodules/*.so \
+	> %{_libdir}/vmware/libconf/etc/gtk-2.0/gtk.immodules
+pango-querymodules %{_libdir}/vmware/libconf/lib/pango/1.5.0/modules/*.so \
+	> %{_libdir}/vmware/libconf/etc/pango/pango.modules
+%endif
 
 %post networking
 /sbin/chkconfig --add vmnet
@@ -321,16 +351,37 @@ fi
 %attr(755,root,root) %{_libdir}/libvmwareui.so.*
 %dir %{_libdir}/vmware
 %dir %{_libdir}/vmware/bin
-%{_libdir}/vmware/lib
-# package old openssl (buggy but needed to work)
-%attr(755,root,root) %{_libdir}/vmware/lib/libcrypto.so.0.9.7/libcrypto.so.0.9.7
 # warning: SUID !!!
 %attr(4755,root,root) %{_libdir}/vmware/bin/vmware-vmx
+%dir %{_libdir}/vmware/lib
 %{_libdir}/vmware/config
 %if %{with internal_libs}
 %attr(755,root,root) %{_libdir}/vmware/bin/vmplayer
-%{_libdir}/vmware/lib/lib*
+%attr(755,root,root) %{_libdir}/vmware/lib/lib*
 %attr(755,root,root) %{_libdir}/vmware/lib/wrapper-gtk24.sh
+
+%dir %{_libdir}/vmware/libconf
+%dir %{_libdir}/vmware/libconf/etc
+%{_libdir}/vmware/libconf/etc/fonts
+%{_libdir}/vmware/libconf/etc/gtk-2.0
+%{_libdir}/vmware/libconf/etc/pango
+%dir %{_libdir}/vmware/libconf/lib
+%dir %{_libdir}/vmware/libconf/lib/gtk-2.0
+%dir %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0
+%dir %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/engines
+%attr(755,root,root) %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/engines/*.so
+%dir %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/immodules
+%attr(755,root,root) %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/immodules/*.so
+%dir %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/loaders
+%attr(755,root,root) %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/loaders/*.so
+%dir %{_libdir}/vmware/libconf/lib/pango
+%dir %{_libdir}/vmware/libconf/lib/pango/1.5.0
+%dir %{_libdir}/vmware/libconf/lib/pango/1.5.0/modules
+%attr(755,root,root) %{_libdir}/vmware/libconf/lib/pango/1.5.0/modules/*.so
+%else
+# package old openssl (buggy but needed to work)
+%dir %{_libdir}/vmware/lib/libcrypto.so.0.9.7
+%attr(755,root,root) %{_libdir}/vmware/lib/libcrypto.so.0.9.7/libcrypto.so.0.9.7
 %endif
 %dir %{_libdir}/vmware/messages
 %lang(en) %{_libdir}/vmware/messages/en
