@@ -387,6 +387,7 @@ fi
 # package old openssl (buggy but needed to work)
 %dir %{_libdir}/vmware/lib/libcrypto.so.0.9.7
 %attr(755,root,root) %{_libdir}/vmware/lib/libcrypto.so.0.9.7/libcrypto.so.0.9.7
+%dir %{_libdir}/vmware/lib/libssl.so.0.9.7
 %attr(755,root,root) %{_libdir}/vmware/lib/libssl.so.0.9.7/libssl.so.0.9.7
 %endif
 %dir %{_libdir}/vmware/messages
