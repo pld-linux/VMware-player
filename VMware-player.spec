@@ -19,7 +19,7 @@
 %define		buildid	59824
 %define		urel	115
 %define		ccver	%(rpm -q --qf '%{V}' gcc)
-%define		_rel	0.10
+%define		_rel	0.11
 #
 Summary:	VMware player
 Summary(pl.UTF-8):	VMware player - wirtualna platforma dla stacji roboczej
@@ -53,6 +53,7 @@ BuildRequires:	sed >= 4.0
 Requires:	libgnomecanvasmm
 Requires:	libview >= 0.5.5-2
 Requires:	openssl >= 0.9.7
+Requires(post,postun):	desktop-file-utils
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -306,8 +307,9 @@ rm -rf $RPM_BUILD_ROOT%{_bindir}/vmware-{config,uninstall}.pl $RPM_BUILD_ROOT%{_
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%if %{with internal_libs}
 %post
+%update_icon_cache hicolor
+%if %{with internal_libs}
 gdk-pixbuf-query-loaders %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/loaders/*.so \
 	> %{_libdir}/vmware/libconf/etc/gtk-2.0/gdk-pixbuf.loaders
 gtk-query-immodules-2.0 %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/immodules/*.so \
@@ -315,6 +317,9 @@ gtk-query-immodules-2.0 %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/immodules/*
 pango-querymodules %{_libdir}/vmware/libconf/lib/pango/1.5.0/modules/*.so \
 	> %{_libdir}/vmware/libconf/etc/pango/pango.modules
 %endif
+
+%postun
+%update_icon_cache hicolor
 
 %post networking
 /sbin/chkconfig --add vmnet
