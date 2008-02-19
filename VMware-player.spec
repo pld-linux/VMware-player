@@ -19,7 +19,7 @@
 %define		buildid	59824
 %define		urel	115
 %define		ccver	%(rpm -q --qf '%{V}' gcc)
-%define		_rel	0.11
+%define		_rel	0.13
 #
 Summary:	VMware player
 Summary(pl.UTF-8):	VMware player - wirtualna platforma dla stacji roboczej
@@ -296,8 +296,8 @@ cp -a	lib/libconf $RPM_BUILD_ROOT%{_libdir}/vmware
 %else
 install lib/bin/vmplayer $RPM_BUILD_ROOT%{_bindir}
 install -d $RPM_BUILD_ROOT%{_libdir}/vmware/lib/lib{crypto,ssl}.so.0.9.7
-ln -s %{_libdir}/libcrypto.so $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libcrypto.so.0.9.7/libcrypto.so.0.9.7
-ln -s %{_libdir}/libssl.so $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libssl.so.0.9.7/libssl.so.0.9.7
+ln -s %{_libdir}/libcrypto.so.0.9.7 $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libcrypto.so.0.9.7/libcrypto.so.0.9.7
+ln -s %{_libdir}/libssl.so.0.9.7 $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libssl.so.0.9.7/libssl.so.0.9.7
 %endif
 
 # remove not needed files
