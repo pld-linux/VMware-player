@@ -15,8 +15,8 @@
 %undefine	with_userspace
 %endif
 #
-%define		ver		2.0.2
-%define		buildid	59824
+%define		ver		2.0.3
+%define		buildid	80004
 %define		urel	115
 %define		ccver	%(rpm -q --qf '%{V}' gcc)
 %define		_rel	0.13
@@ -29,10 +29,10 @@ Release:	%{_rel}
 License:	custom, non-distributable
 Group:		Applications/Emulators
 Source0:	http://download3.vmware.com/software/vmplayer/%{name}-%{ver}-%{buildid}.i386.tar.gz
-# NoSource0-md5:	0c108db615943d71b78f18826611acce
+# NoSource0-md5:	
 NoSource:	0
 Source1:	http://download3.vmware.com/software/vmplayer/%{name}-%{ver}-%{buildid}.x86_64.tar.gz
-# NoSource1-md5:	f59a77f3e3b8e87591eff605c4bbb796
+# NoSource1-md5:	
 NoSource:	1
 Source2:	http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{urel}.tar.gz
 # Source2-md5:	ab33ff7a799fee77f0f4ba5667cd4b9a
