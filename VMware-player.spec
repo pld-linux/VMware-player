@@ -17,9 +17,9 @@
 #
 %define		ver		2.0.3
 %define		buildid	80004
-%define		urel	115
+%define		urel	115a
 %define		ccver	%(rpm -q --qf '%{V}' gcc)
-%define		_rel	0.13
+%define		_rel	0.14
 #
 Summary:	VMware player
 Summary(pl.UTF-8):	VMware player - wirtualna platforma dla stacji roboczej
@@ -34,8 +34,9 @@ NoSource:	0
 Source1:	http://download3.vmware.com/software/vmplayer/%{name}-%{ver}-%{buildid}.x86_64.tar.gz
 # NoSource1-md5:	
 NoSource:	1
-Source2:	http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{urel}.tar.gz
-# Source2-md5:	ab33ff7a799fee77f0f4ba5667cd4b9a
+Source2:	http://rtr.ca/vmware-2.6.24/vmware-any-any-update%{urel}.tgz
+# Source2-md5:	d0433cf49589e0140ed6730ad790de3a
+# original any-any: http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{urel}.tar.gz
 Source3:	%{name}-vmnet.conf
 Source4:	%{name}.png
 Source5:	%{name}.desktop
@@ -44,6 +45,8 @@ Source7:	%{name}-dhcpd.conf
 Source8:	%{name}.init
 Patch0:		%{name}-Makefile.patch
 Patch1:		%{name}-run_script.patch
+# patch below is included only for showing differences between 115 and 115a and not used for patching
+Patch100:	vmware-any-any-update115-to-115a.patch	
 URL:		http://www.vmware.com/
 %{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7}
 BuildRequires:	libstdc++-devel

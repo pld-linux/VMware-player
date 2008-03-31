@@ -1,5 +1,5 @@
---- vmware-player-distrib/vmware-any-any-update115/vmmon-only/Makefile	2007-11-28 12:39:37.000000000 +0200
-+++ vmware-player-distrib-new/vmware-any-any-update115/vmmon-only/Makefile	2007-12-17 02:21:20.665830641 +0200
+--- vmware-player-distrib/vmware-any-any-update115a/vmmon-only/Makefile	2007-11-28 12:39:37.000000000 +0200
++++ vmware-player-distrib-new/vmware-any-any-update115a/vmmon-only/Makefile	2007-12-17 02:21:20.665830641 +0200
 @@ -15,9 +15,9 @@
  VM_UNAME = $(shell uname -r)
  
@@ -102,8 +102,8 @@
  else
  
  include $(SRCROOT)/Makefile.normal
---- vmware-player-distrib/vmware-any-any-update115/vmnet-only/Makefile	2007-11-28 12:19:12.000000000 +0200
-+++ vmware-player-distrib-new/vmware-any-any-update115/vmnet-only/Makefile	2007-12-17 02:19:06.321685076 +0200
+--- vmware-player-distrib/vmware-any-any-update115a/vmnet-only/Makefile	2007-11-28 12:19:12.000000000 +0200
++++ vmware-player-distrib-new/vmware-any-any-update115a/vmnet-only/Makefile	2007-12-17 02:19:06.321685076 +0200
 @@ -15,9 +15,9 @@
  VM_UNAME = $(shell uname -r)
  
