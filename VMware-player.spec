@@ -1,3 +1,7 @@
+# TODO:
+# - update to 2.0.4 (93057) - fixes CVE-2008-2098 and CVE-2008-2099
+#   this requires new/fixed version of vmware-any-any-update to work
+#   with current kernels
 #
 # Conditional build:
 %bcond_without	dist_kernel	# without distribution kernel
