@@ -21,7 +21,7 @@
 #
 %define		ver		2.0.3
 %define		buildid	80004
-%define		urel	115a
+%define		urel	117d
 %define		ccver	%(rpm -q --qf '%{V}' gcc)
 %define		_rel	0.14
 #
@@ -38,7 +38,8 @@ NoSource:	0
 Source1:	http://download3.vmware.com/software/vmplayer/%{name}-%{ver}-%{buildid}.x86_64.tar.gz
 # NoSource1-md5:	
 NoSource:	1
-Source2:	http://rtr.ca/vmware-2.6.24/vmware-any-any-update%{urel}.tgz
+Source2:	http://vmkernelnewbies.googlegroups.com/web/vmware-any-any-update%{urel}.tar.gz
+#Source2:	http://rtr.ca/vmware-2.6.24/vmware-any-any-update%{urel}.tgz
 # Source2-md5:	d0433cf49589e0140ed6730ad790de3a
 # original any-any: http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{urel}.tar.gz
 Source3:	%{name}-vmnet.conf
@@ -49,6 +50,7 @@ Source7:	%{name}-dhcpd.conf
 Source8:	%{name}.init
 Patch0:		%{name}-Makefile.patch
 Patch1:		%{name}-run_script.patch
+Patch2:		VMware-player-vmnet.patch
 # patch below is included only for showing differences between 115 and 115a and not used for patching
 Patch100:	vmware-any-any-update115-to-115a.patch	
 URL:		http://www.vmware.com/
@@ -160,6 +162,12 @@ Moduły jądra dla VMware Player - vmnet.
 cd vmware-any-any-update%{urel}
 tar xf vmmon.tar
 tar xf vmnet.tar
+
+%patch2 -p2
+
+# hack until new any-any-update version available
+sed -i -e 's/#define.*VMMON_VERSION.*/#define VMMON_VERSION		(167 << 16 | 0)/g' vmmon-only/include/iocontrols.h
+
 cp -a vmmon-only{,.clean}
 cp -a vmnet-only{,.clean}
 sed -e 's/filter x86_64%/filter x86_64% amd64% ia64%/' \
@@ -188,9 +196,6 @@ sed -i 's:vm_db_answer_LIBDIR:VM_LIBDIR:g;s:vm_db_answer_BINDIR:VM_BINDIR:g' bin
 
 cd vmware-any-any-update%{urel}
 chmod u+w ../lib/bin/vmware-vmx ../lib/bin-debug/vmware-vmx ../bin/vmnet-bridge
-
-# hack until new any-any-update version available
-sed -i -e 's/#define.*VMMON_VERSION_V6.*/#define VMMON_VERSION_V6		(167 << 16 | 0)/g' vmmon-only.clean/include/iocontrols_compat.h
 
 %if %{with kernel}
 rm -rf built
@@ -255,9 +260,6 @@ install -d \
 %endif
 
 %if %{with kernel}
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/modprobe.d
-echo "options vmmon vmversion=16" > $RPM_BUILD_ROOT%{_sysconfdir}/modprobe.d/%{name}-vmmon.conf
-
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/misc
 
 cd vmware-any-any-update%{urel}/built
@@ -441,7 +443,6 @@ fi
 %if %{with kernel}
 %files -n kernel%{_alt_kernel}-misc-vmmon
 %defattr(644,root,root,755)
-%{_sysconfdir}/modprobe.d/%{name}-vmmon.conf
 /lib/modules/%{_kernel_ver}/misc/vmmon.ko*
 
 %files -n kernel%{_alt_kernel}-misc-vmnet
