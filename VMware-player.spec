@@ -39,8 +39,8 @@ Source1:	http://download3.vmware.com/software/vmplayer/%{name}-%{ver}-%{buildid}
 # NoSource1-md5:	
 NoSource:	1
 Source2:	http://vmkernelnewbies.googlegroups.com/web/vmware-any-any-update%{urel}.tar.gz
+# Source2-md5:	730ef7124e03883fa5e30614b888c9d4
 #Source2:	http://rtr.ca/vmware-2.6.24/vmware-any-any-update%{urel}.tgz
-# Source2-md5:	d0433cf49589e0140ed6730ad790de3a
 # original any-any: http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{urel}.tar.gz
 Source3:	%{name}-vmnet.conf
 Source4:	%{name}.png
