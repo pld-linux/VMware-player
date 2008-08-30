@@ -1,6 +1,7 @@
---- vmware-player-distrib/vmware-any-any-update115a/vmmon-only/Makefile	2007-11-28 12:39:37.000000000 +0200
-+++ vmware-player-distrib-new/vmware-any-any-update115a/vmmon-only/Makefile	2007-12-17 02:21:20.665830641 +0200
-@@ -15,9 +15,9 @@
+diff -Nur old/vmware-any-any-update117d/vmmon-only/Makefile new/vmware-any-any-update117d/vmmon-only/Makefile
+--- old/vmware-any-any-update117d/vmmon-only/Makefile	2008-08-30 15:29:13.946349500 +0000
++++ new/vmware-any-any-update117d/vmmon-only/Makefile	2008-08-30 15:29:23.042918000 +0000
+@@ -14,9 +14,9 @@
  VM_UNAME = $(shell uname -r)
  
  # Header directory for the running kernel
@@ -12,40 +13,7 @@
  
  DRIVER := vmmon
  
-@@ -45,32 +45,6 @@
-     VM_KBUILD_OUTPUT := $(O)
-   endif
- endif
--ifeq ($(VM_KBUILD_OUTPUT),)
--VM_KBUILD_OUTPUT := $(BUILD_DIR)
--endif
--ifeq ($(call vm_check_file,$(BUILD_DIR)/Makefile), yes)
--ifeq ($(call vm_check_file,$(VM_KBUILD_OUTPUT)/.config), no)
--VM_DUMMY := $(shell echo >&2 '*** Your sources installation is broken:')
--VM_DUMMY := $(shell echo >&2 '*** $(BUILD_DIR) does not contain .config file')
--VM_DUMMY := $(shell echo >&2 '*** vmmon/vmnet build may fail, or built vmmon/vmnet may crash.')
--ifeq ($(call vm_check_file,/boot/vmlinuz.config), yes)
--VM_DUMMY := $(shell echo >&2 '*** You are apparently use SuSE system. You should copy')
--VM_DUMMY := $(shell echo >&2 '*** /boot/vmlinuz.config to the $(BUILD_DIR)/.config.')
--endif
--VM_DUMMY := $(shell echo >&2)
--VM_DUMMY := $(shell echo >&2 '*** Hit ENTER to continue, or ^C to stop build.')
--VM_DUMMY := $(shell read dummy)
--else
--ifeq ($(call vm_check_file,$(BUILD_DIR)/Rules.make), yes)
--ifeq ($(shell if $(GREP) "^PATCHLEVEL = 4$$" $(BUILD_DIR)/Makefile > /dev/null 2>&1; then echo "yes"; fi), yes)
--VM_KBUILD := 24
--endif
--else
--VM_KBUILD := 26
--endif
--endif
--endif
--export VM_KBUILD
- endif
- 
- ifndef VM_KBUILD_SHOWN
-@@ -91,9 +65,6 @@
+@@ -55,9 +55,6 @@
  
  VMCCVER := $(shell $(CC) -dumpversion)
  
@@ -55,36 +23,7 @@
  ifeq ($(VM_KBUILD), 24)
  DRIVER_KO := $(DRIVER).o
  else
-@@ -109,28 +80,11 @@
- $(DRIVER): $(DRIVER_KO)
- 	if [ $< -nt $@ ]; then cp -f $< $@; fi
- 
--# Pass gcc version down the chain, so we can detect if kernel attempts to use unapproved compiler
--VM_CCVER := $(VMCCVER)
--export VM_CCVER
--VM_CC := $(CC)
--export VM_CC
--
- MAKEOVERRIDES := $(filter-out CC=%,$(MAKEOVERRIDES))
- 
- $(DRIVER_KO):
- 	make -C $(BUILD_DIR) SUBDIRS=$$PWD SRCROOT=$$PWD/$(SRCROOT) modules
- 
--else
--
--ifneq ($(VM_CCVER), $(VMCCVER))
--$(warning *** Inappropriate build environment: you wanted to use gcc \
-- version $(VM_CCVER) while kernel attempts to use gcc version $(VMCCVER).)
--$(error For proper build you'll have to replace $(CC) with symbolic \
-- link to $(VM_CC))
--endif
--
--endif
--
- VMWARE_DEBUG_REDIRECT := > /dev/null 2>&1
- ifeq ($(VMWARE_DEBUG_AUTOCONF),y)
- ifneq ($(VERSION),)
-@@ -157,17 +111,6 @@
+@@ -113,17 +110,6 @@
  
  include $(SRCROOT)/Makefile.kernel
  
@@ -102,9 +41,10 @@
  else
  
  include $(SRCROOT)/Makefile.normal
---- vmware-player-distrib/vmware-any-any-update115a/vmnet-only/Makefile	2007-11-28 12:19:12.000000000 +0200
-+++ vmware-player-distrib-new/vmware-any-any-update115a/vmnet-only/Makefile	2007-12-17 02:19:06.321685076 +0200
-@@ -15,9 +15,9 @@
+diff -Nur old/vmware-any-any-update117d/vmnet-only/Makefile new/vmware-any-any-update117d/vmnet-only/Makefile
+--- old/vmware-any-any-update117d/vmnet-only/Makefile	2008-08-30 15:30:05.813591000 +0000
++++ new/vmware-any-any-update117d/vmnet-only/Makefile	2008-08-30 15:30:13.886095500 +0000
+@@ -14,9 +14,9 @@
  VM_UNAME = $(shell uname -r)
  
  # Header directory for the running kernel
@@ -116,37 +56,7 @@
  
  DRIVER := vmnet
  
-@@ -48,29 +48,6 @@
- ifeq ($(VM_KBUILD_OUTPUT),)
- VM_KBUILD_OUTPUT := $(BUILD_DIR)
- endif
--ifeq ($(call vm_check_file,$(BUILD_DIR)/Makefile), yes)
--ifeq ($(call vm_check_file,$(VM_KBUILD_OUTPUT)/.config), no)
--VM_DUMMY := $(shell echo >&2 '*** Your sources installation is broken:')
--VM_DUMMY := $(shell echo >&2 '*** $(BUILD_DIR) does not contain .config file')
--VM_DUMMY := $(shell echo >&2 '*** vmmon/vmnet build may fail, or built vmmon/vmnet may crash.')
--ifeq ($(call vm_check_file,/boot/vmlinuz.config), yes)
--VM_DUMMY := $(shell echo >&2 '*** You are apparently use SuSE system. You should copy')
--VM_DUMMY := $(shell echo >&2 '*** /boot/vmlinuz.config to the $(BUILD_DIR)/.config.')
--endif
--VM_DUMMY := $(shell echo >&2)
--VM_DUMMY := $(shell echo >&2 '*** Hit ENTER to continue, or ^C to stop build.')
--VM_DUMMY := $(shell read dummy)
--else
--ifeq ($(call vm_check_file,$(BUILD_DIR)/Rules.make), yes)
--ifeq ($(shell if $(GREP) "^PATCHLEVEL = 4$$" $(BUILD_DIR)/Makefile > /dev/null 2>&1; then echo "yes"; fi), yes)
--VM_KBUILD := 24
--endif
--else
--VM_KBUILD := 26
--endif
--endif
--endif
--export VM_KBUILD
- endif
- 
- ifndef VM_KBUILD_SHOWN
-@@ -91,9 +68,6 @@
+@@ -55,9 +55,6 @@
  
  VMCCVER := $(shell $(CC) -dumpversion)
  
