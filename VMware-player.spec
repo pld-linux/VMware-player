@@ -54,6 +54,8 @@ Patch2:		VMware-player-vmnet.patch
 # patch below is included only for showing differences between 115 and 115a and not used for patching
 Patch100:	vmware-any-any-update115-to-115a.patch	
 URL:		http://www.vmware.com/
+# http://securitytracker.com/alerts/2008/Oct/1020991.html
+BuildRequires:	security(VMSA-2008-0016)
 %{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7}
 BuildRequires:	libstdc++-devel
 BuildRequires:	rpm-perlprov
