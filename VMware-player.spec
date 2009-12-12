@@ -1,16 +1,9 @@
-# TODO:
-# - update to 2.0.4 (93057) - fixes CVE-2008-2098 and CVE-2008-2099
-#   this requires new/fixed version of vmware-any-any-update to work
-#   with current kernels
-#
 # Conditional build:
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	kernel		# don't build kernel modules
 %bcond_without	userspace	# don't build userspace utilities
 %bcond_with	internal_libs	# internal libs stuff
 %bcond_with	verbose		# verbose build (V=1)
-#
-%include	/usr/lib/rpm/macros.perl
 
 %if %{without kernel}
 %undefine	with_dist_kernel
@@ -18,53 +11,36 @@
 %ifarch %{x8664}
 %undefine	with_userspace
 %endif
-#
-%define		ver		2.0.3
-%define		buildid	80004
-%define		urel	117d
-%define		ccver	%(rpm -q --qf '%{V}' gcc)
-%define		_rel	0.14
-#
+
+%define		ver		3.0.0
+%define		buildid	203739
+%define		rel		0.1
+
+# point to some working url
+%define		download_url	%{nil}
+
 Summary:	VMware player
 Summary(pl.UTF-8):	VMware player - wirtualna platforma dla stacji roboczej
 Name:		VMware-player
 Version:	%{ver}.%{buildid}
-Release:	%{_rel}
+Release:	%{rel}
 License:	custom, non-distributable
 Group:		Applications/Emulators
-Source0:	http://download3.vmware.com/software/vmplayer/%{name}-%{ver}-%{buildid}.i386.tar.gz
-# NoSource0-md5:	
+# https://www.vmware.com/go/downloadplayer/
+Source0:	%{download_url}VMware-Player-%{ver}-%{buildid}.i386.bundle
+# NoSource0-md5:	1c273da70347a381dc685b5fdf922e7d
 NoSource:	0
-Source1:	http://download3.vmware.com/software/vmplayer/%{name}-%{ver}-%{buildid}.x86_64.tar.gz
-# NoSource1-md5:	
+Source1:	%{download_url}VMware-Player-%{ver}-%{buildid}.x86_64.bundle
+# NoSource1-md5:	cf8ac6a75e4fd51a8c9c527a594f5ffc
 NoSource:	1
-Source2:	http://vmkernelnewbies.googlegroups.com/web/vmware-any-any-update%{urel}.tar.gz
-# Source2-md5:	730ef7124e03883fa5e30614b888c9d4
-#Source2:	http://rtr.ca/vmware-2.6.24/vmware-any-any-update%{urel}.tgz
-# original any-any: http://knihovny.cvut.cz/ftp/pub/vmware/vmware-any-any-update%{urel}.tar.gz
-Source3:	%{name}-vmnet.conf
-Source4:	%{name}.png
-Source5:	%{name}.desktop
-Source6:	%{name}-nat.conf
-Source7:	%{name}-dhcpd.conf
-Source8:	%{name}.init
-Patch0:		%{name}-Makefile.patch
-Patch1:		%{name}-run_script.patch
-Patch2:		VMware-player-vmnet.patch
-# patch below is included only for showing differences between 115 and 115a and not used for patching
-Patch100:	vmware-any-any-update115-to-115a.patch	
+Patch0:		installer.patch
 URL:		http://www.vmware.com/
-# http://securitytracker.com/alerts/2008/Oct/1020991.html
-BuildRequires:	security(VMSA-2008-0016)
 %{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7}
-BuildRequires:	libstdc++-devel
-BuildRequires:	rpm-perlprov
 BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
 Requires:	libgnomecanvasmm
 Requires:	libview >= 0.5.5-2
 Requires:	openssl >= 0.9.7
-Requires(post,postun):	desktop-file-utils
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -121,10 +97,10 @@ VMware networking utilities.
 %description networking -l pl.UTF-8
 Narzędzia VMware do obsługi sieci.
 
-%package -n kernel%{_alt_kernel}-misc-vmmon
-Summary:	Kernel module for VMware Player
-Summary(pl.UTF-8):	Moduł jądra dla VMware Player
-Release:	%{_rel}@%{_kernel_ver_str}
+%package -n kernel%{_alt_kernel}-misc-vmci
+Summary:	VMware Virtual Machine Communication Interface (VMCI)
+Summary(pl.UTF-8):	VMCI (Virtual Machine Communication Interface) - interfejs komunikacyjny VMware
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -132,7 +108,44 @@ Requires:	dev >= 2.9.0-7
 %requires_releq_kernel
 Requires(postun):	%releq_kernel
 %endif
-Provides:	kernel(vmmon) = %{version}-%{_rel}
+
+%description -n kernel%{_alt_kernel}-misc-vmci
+Linux kernel module acting as VMware Virtual Machine Communication
+Interface (VMCI).
+
+%description -n kernel%{_alt_kernel}-misc-vmci -l pl.UTF-8
+Moduł jądra Linuksa będący interfejsem komunikacyjnym VMware (VMCI -
+Virtual Machine Communication Interface).
+
+%package -n kernel%{_alt_kernel}-misc-vmblock
+Summary:	Kernel module for VMware Player
+Summary(pl.UTF-8):	Moduł jądra dla VMware Player
+Release:	%{rel}@%{_kernel_ver_str}
+Group:		Base/Kernel
+Requires(post,postun):	/sbin/depmod
+Requires:	dev >= 2.9.0-7
+%if %{with dist_kernel}
+%requires_releq_kernel
+Requires(postun):	%releq_kernel
+%endif
+
+%description -n kernel%{_alt_kernel}-misc-vmblock
+Kernel modules for VMware Player - vmblock.
+
+%description -n kernel%{_alt_kernel}-misc-vmblock -l pl.UTF-8
+Moduły jądra dla VMware Player - vmblock.
+
+%package -n kernel%{_alt_kernel}-misc-vmmon
+Summary:	Kernel module for VMware Player
+Summary(pl.UTF-8):	Moduł jądra dla VMware Player
+Release:	%{rel}@%{_kernel_ver_str}
+Group:		Base/Kernel
+Requires(post,postun):	/sbin/depmod
+Requires:	dev >= 2.9.0-7
+%if %{with dist_kernel}
+%requires_releq_kernel
+Requires(postun):	%releq_kernel
+%endif
 
 %description -n kernel%{_alt_kernel}-misc-vmmon
 Kernel modules for VMware Player - vmmon.
@@ -143,7 +156,7 @@ Moduły jądra dla VMware Player - vmmon.
 %package -n kernel%{_alt_kernel}-misc-vmnet
 Summary:	Kernel module for VMware Player
 Summary(pl.UTF-8):	Moduł jądra dla VMware Player
-Release:	%{_rel}@%{_kernel_ver_str}
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -151,7 +164,6 @@ Requires:	dev >= 2.9.0-7
 %requires_releq_kernel
 Requires(postun):	%releq_kernel
 %endif
-Provides:	kernel(vmnet) = %{version}-%{_rel}
 
 %description -n kernel%{_alt_kernel}-misc-vmnet
 Kernel modules for VMware Player - vmnet.
@@ -159,188 +171,132 @@ Kernel modules for VMware Player - vmnet.
 %description -n kernel%{_alt_kernel}-misc-vmnet -l pl.UTF-8
 Moduły jądra dla VMware Player - vmnet.
 
+%package -n kernel%{_alt_kernel}-misc-vsock
+Summary:	VMware Virtual Socket Family support
+Summary(pl.UTF-8):	Obsługa Virtual Socket Family - rodziny gniazd wirtualnych VMware
+Release:	%{rel}@%{_kernel_ver_str}
+Group:		Base/Kernel
+Requires(post,postun):	/sbin/depmod
+Requires:	dev >= 2.9.0-7
+%if %{with dist_kernel}
+%requires_releq_kernel
+Requires(postun):	%releq_kernel
+%endif
+Requires:	kernel%{_alt_kernel}-misc-vmci = %{version}-%{rel}@%{_kernel_ver_str}
+
+%description -n kernel%{_alt_kernel}-misc-vsock
+Linux kernel module supporting VMware Virtual Socket Family.
+
+%description -n kernel%{_alt_kernel}-misc-vsock -l pl.UTF-8
+Moduł jądra Linuksa obsługujący rodzinę gniazd wirtualnych VMware
+(Virtual Socket Family).
+
 %prep
-%setup -q -n vmware-player-distrib -a2
-cd vmware-any-any-update%{urel}
-tar xf vmmon.tar
-tar xf vmnet.tar
+%setup -qcT
+%ifarch %{ix86}
+export SOURCE=%{SOURCE0}
+%endif
+%ifarch %{x8664}
+export SOURCE=%{SOURCE1}
+%endif
 
-%patch2 -p2
+# extract installer shell blob
+%{__sed} -ne '1,/^exit/{s,$0,$SOURCE,;p}' $SOURCE > install.sh
+%{__sed} -i -e "2iSOURCE=$SOURCE" install.sh
+%patch0 -p1
+chmod a+x install.sh
 
-# hack until new any-any-update version available
-sed -i -e 's/#define.*VMMON_VERSION.*/#define VMMON_VERSION		(167 << 16 | 0)/g' vmmon-only/include/iocontrols.h
+./install.sh --extract bundles
 
-cp -a vmmon-only{,.clean}
-cp -a vmnet-only{,.clean}
-sed -e 's/filter x86_64%/filter x86_64% amd64% ia64%/' \
-	-i vmnet-only.clean/Makefile.kernel
+cd bundles/vmware-player-app/lib/modules
+%{__tar} xf source/vmblock.tar
+%{__tar} xf source/vmci.tar
+%{__tar} xf source/vmmon.tar
+%{__tar} xf source/vmnet.tar
+%{__tar} xf source/vsock.tar
+mv vmmon-only/linux/driver.c{,.dist}
+mv vmnet-only/hub.c{,.dist}
+mv vmnet-only/driver.c{,.dist}
+rm -rf binary # unusable
 cd -
 
-%patch0 -p1
-%patch1 -p1
+find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
 
-# will never use these
-rm -f lib/libconf/lib/gtk-2.0/2.10.0/engines/*.a
-rm -f lib/libconf/lib/gtk-2.0/2.10.0/immodules/*.a
-rm -f lib/libconf/lib/gtk-2.0/2.10.0/loaders/*.a
-rm -f lib/libconf/lib/pango/1.5.0/modules/*.a
+%if 0
+# build our local install.sh
+# grab offsets
+%{__sed} -ne "/^### Offsets ###/,/^### End offsets/{s,\$0,\$SOURCE,;p}" blob.sh > install.sh
+# grab product name
+%{__grep} ^PRODUCT_NAME= blob.sh >> install.sh
+# install set_lengths function
+%{__sed} -ne "/^set_lengths/,/^}/p" blob.sh >> install.sh
+cat <<'EOF' >> install.sh
+set_lengths $SOURCE
+dd if="$SOURCE" ibs=$LAUNCHER_SIZE obs=1024 skip=1 | tar xz
+dd if="$SOURCE" ibs=$SKIP_BYTES obs=1024 skip=1 | tar xz
+EOF
+sh -x install.sh
 
-%{__sed} -i -e 's#/build/.*/libconf/#%{_libdir}/vmware/libconf/#' \
-	lib/libconf/etc/gtk-2.0/{gdk-pixbuf.loaders,gtk.immodules} \
-	lib/libconf/etc/pango/{pango.modules,pangorc}
-
-# typo?
-%{__sed} -i -e 's#/etc/pango/pango/pangox.aliases#/etc/pango/pangox.aliases#' \
-	lib/libconf/etc/pango/pangorc
+sed -e "s,@@VMWARE_INSTALLER@,$(PWD)/install," install/vmware-installer/bootstrap > install/bootstrap
+. install/bootstrap
+%endif
 
 %build
-sed -i 's:vm_db_answer_LIBDIR:VM_LIBDIR:g;s:vm_db_answer_BINDIR:VM_BINDIR:g' bin/vmplayer
-
-cd vmware-any-any-update%{urel}
-chmod u+w ../lib/bin/vmware-vmx ../lib/bin-debug/vmware-vmx ../bin/vmnet-bridge
-
 %if %{with kernel}
-rm -rf built
-mkdir built
+cd bundles/vmware-player-app/lib/modules
 
-for mod in vmmon vmnet ; do
-	for cfg in %{?with_dist_kernel:dist}%{!?with_dist_kernel:nondist}; do
-		if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
-			exit 1
-		fi
-		rm -rf $mod-only
-		cp -a $mod-only.clean $mod-only
-		cd $mod-only
-		install -d o/include/linux
-		ln -sf %{_kernelsrcdir}/config-$cfg o/.config
-		ln -sf %{_kernelsrcdir}/Module.symvers-$cfg o/Module.symvers
-		ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h o/include/linux/autoconf.h
-	if grep -q "^CONFIG_PREEMPT_RT=y$" o/.config; then
-		sed -e '/pollQueueLock/s/SPIN_LOCK_UNLOCKED/SPIN_LOCK_UNLOCKED(pollQueueLock)/' \
-			-e '/timerLock/s/SPIN_LOCK_UNLOCKED/SPIN_LOCK_UNLOCKED(timerLock)/' \
-			-i ../vmmon-only/linux/driver.c
-		sed -e 's/SPIN_LOCK_UNLOCKED/SPIN_LOCK_UNLOCKED(vnetHubLock)/' \
-			-i ../vmnet-only/hub.c
-		sed -e 's/RW_LOCK_UNLOCKED/RW_LOCK_UNLOCKED(vnetPeerLock)/' \
-			-i ../vmnet-only/driver.c
-	fi
-	%if %{with dist_kernel}
-		%{__make} -j1 -C %{_kernelsrcdir} O=$PWD/o prepare scripts
-	%else
-		install -d o/include/config
-		touch o/include/config/MARKER
-		ln -sf %{_kernelsrcdir}/scripts o/scripts
-		%endif
-		%{__make} -C %{_kernelsrcdir} modules \
-			VMWARE_VER=VME_V5 \
-			SRCROOT=$PWD \
-			M=$PWD O=$PWD/o \
-			VM_KBUILD=26 \
-			%{?with_verbose:V=1} \
-			VM_CCVER=%{ccver}
-		mv -f $mod.ko ../built/$mod-$cfg.ko
-		cd -
-	done
-done
+%build_kernel_modules -C vmblock-only -m vmblock SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%build_kernel_modules -C vmci-only -m vmci SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%build_kernel_modules -C vmmon-only -m vmmon SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version} <<'EOF'
+if grep -q "^CONFIG_PREEMPT_RT=y$" o/.config; then
+	sed -e '/pollQueueLock/s/SPIN_LOCK_UNLOCKED/SPIN_LOCK_UNLOCKED(pollQueueLock)/' \
+		-e '/timerLock/s/SPIN_LOCK_UNLOCKED/SPIN_LOCK_UNLOCKED(timerLock)/' \
+	linux/driver.c.dist > linux/driver.c
+else
+	cat linux/driver.c.dist > linux/driver.c
+fi
+EOF
+
+%build_kernel_modules -C vmnet-only -m vmnet SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version} <<'EOF'
+if grep -q "^CONFIG_PREEMPT_RT=y$" o/.config; then
+	sed -e 's/SPIN_LOCK_UNLOCKED/SPIN_LOCK_UNLOCKED(vnetHubLock)/' \
+		 hub.c.dist > hub.c
+	sed -e 's/RW_LOCK_UNLOCKED/RW_LOCK_UNLOCKED(vnetPeerLock)/' \
+		driver.c.dist > driver.c
+else
+	cat hub.c.dist > hub.c
+	cat driver.c.dist > driver.c
+fi
+EOF
+
+cp -a vmci-only/Module.symvers vsock-only
+%build_kernel_modules -C vsock-only -m vsock SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version} -c
 %endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-%if %{with userspace}
-install -d \
-	$RPM_BUILD_ROOT%{_sysconfdir}/vmware \
-	$RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/{nat,dhcpd} \
-	$RPM_BUILD_ROOT%{_bindir} \
-	$RPM_BUILD_ROOT%{_libdir}/vmware/{bin,lib,share/pixmaps} \
-	$RPM_BUILD_ROOT%{_mandir} \
-	$RPM_BUILD_ROOT%{_pixmapsdir} \
-	$RPM_BUILD_ROOT%{_iconsdir}/hicolor \
-	$RPM_BUILD_ROOT%{_desktopdir} \
-	$RPM_BUILD_ROOT/etc/rc.d/init.d \
-	$RPM_BUILD_ROOT/var/run/vmware
-%endif
-
 %if %{with kernel}
-install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/misc
-
-cd vmware-any-any-update%{urel}/built
-install vmmon* $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/misc/vmmon.ko
-install vmnet* $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/misc/vmnet.ko
-cd -
-%endif
-
-%if %{with userspace}
-install %{SOURCE8} $RPM_BUILD_ROOT/etc/rc.d/init.d/vmnet
-install %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet.conf
-install %{SOURCE4} $RPM_BUILD_ROOT%{_pixmapsdir}
-install %{SOURCE5} $RPM_BUILD_ROOT%{_desktopdir}
-install %{SOURCE6} $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/nat/nat.conf
-install %{SOURCE7} $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.conf
-
-touch $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases
-touch $RPM_BUILD_ROOT%{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases~
-
-cp -a lib/share/icons/hicolor/* $RPM_BUILD_ROOT%{_iconsdir}/hicolor
-
-install lib/share/pixmaps/* $RPM_BUILD_ROOT%{_libdir}/vmware/share/pixmaps
-install doc/EULA $RPM_BUILD_ROOT%{_libdir}/vmware/share/EULA.txt
-
-install bin/*-* $RPM_BUILD_ROOT%{_bindir}
-install lib/bin/vmware-vmx $RPM_BUILD_ROOT%{_libdir}/vmware/bin
-install lib/lib/libvmwarebase.so.0/libvmwarebase.so.0 $RPM_BUILD_ROOT%{_libdir}
-install lib/lib/libvmwareui.so.0/libvmwareui.so.0 $RPM_BUILD_ROOT%{_libdir}
-
-cp -r	lib/{bin-debug,config,help*,messages,xkeymap} \
-	$RPM_BUILD_ROOT%{_libdir}/vmware
-
-cat > $RPM_BUILD_ROOT%{_sysconfdir}/vmware/locations <<EOF
-VM_BINDIR=%{_bindir}
-VM_LIBDIR=%{_libdir}/vmware
-EOF
-
-%if %{with internal_libs}
-install bin/vmplayer $RPM_BUILD_ROOT%{_bindir}
-install lib/bin/vmplayer $RPM_BUILD_ROOT%{_libdir}/vmware/bin
-cp -a	lib/lib/* $RPM_BUILD_ROOT%{_libdir}/vmware/lib
-cp -a	lib/libconf $RPM_BUILD_ROOT%{_libdir}/vmware
-%else
-install lib/bin/vmplayer $RPM_BUILD_ROOT%{_bindir}
-install -d $RPM_BUILD_ROOT%{_libdir}/vmware/lib/lib{crypto,ssl}.so.0.9.7
-ln -s %{_libdir}/libcrypto.so.0.9.7 $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libcrypto.so.0.9.7/libcrypto.so.0.9.7
-ln -s %{_libdir}/libssl.so.0.9.7 $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libssl.so.0.9.7/libssl.so.0.9.7
-%endif
-
-# remove not needed files
-rm -rf $RPM_BUILD_ROOT%{_bindir}/vmware-{config,uninstall}.pl $RPM_BUILD_ROOT%{_iconsdir}/hicolor/index.theme
+%install_kernel_modules -m bundles/vmware-player-app/lib/modules/vmblock-only/vmblock -d misc
+%install_kernel_modules -m bundles/vmware-player-app/lib/modules/vmci-only/vmci -d misc
+%install_kernel_modules -m bundles/vmware-player-app/lib/modules/vmmon-only/vmmon -d misc
+%install_kernel_modules -m bundles/vmware-player-app/lib/modules/vmnet-only/vmnet -d misc
+%install_kernel_modules -m bundles/vmware-player-app/lib/modules/vsock-only/vsock -d misc
 %endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post
-%update_icon_cache hicolor
-%if %{with internal_libs}
-gdk-pixbuf-query-loaders %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/loaders/*.so \
-	> %{_libdir}/vmware/libconf/etc/gtk-2.0/gdk-pixbuf.loaders
-gtk-query-immodules-2.0 %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/immodules/*.so \
-	> %{_libdir}/vmware/libconf/etc/gtk-2.0/gtk.immodules
-pango-querymodules %{_libdir}/vmware/libconf/lib/pango/1.5.0/modules/*.so \
-	> %{_libdir}/vmware/libconf/etc/pango/pango.modules
-%endif
+%post	-n kernel%{_alt_kernel}-misc-vmblock
+%depmod %{_kernel_ver}
 
-%postun
-%update_icon_cache hicolor
+%postun -n kernel%{_alt_kernel}-misc-vmblock
+%depmod %{_kernel_ver}
 
-%post networking
-/sbin/chkconfig --add vmnet
-%service vmnet restart "VMware networking service"
+%post	-n kernel%{_alt_kernel}-misc-vmci
+%depmod %{_kernel_ver}
 
-%preun networking
-if [ "$1" = "0" ]; then
-	%service vmnet stop
-	/sbin/chkconfig --del vmnet
-fi
+%postun -n kernel%{_alt_kernel}-misc-vmci
+%depmod %{_kernel_ver}
 
 %post	-n kernel%{_alt_kernel}-misc-vmmon
 %depmod %{_kernel_ver}
@@ -354,95 +310,21 @@ fi
 %postun -n kernel%{_alt_kernel}-misc-vmnet
 %depmod %{_kernel_ver}
 
-%if %{with userspace}
-%files
-%defattr(644,root,root,755)
-%doc doc/* lib/configurator/vmnet-{dhcpd,nat}.conf
-%dir %{_sysconfdir}/vmware
-%{_sysconfdir}/vmware/locations
-%attr(755,root,root) %{_bindir}/vmplayer
-%attr(755,root,root) %{_bindir}/vmware-acetool
-%attr(755,root,root) %{_bindir}/vm-support
-%attr(755,root,root) %{_libdir}/libvmwarebase.so.*
-%attr(755,root,root) %{_libdir}/libvmwareui.so.*
-%dir %{_libdir}/vmware
-%dir %{_libdir}/vmware/bin
-# warning: SUID !!!
-%attr(4755,root,root) %{_libdir}/vmware/bin/vmware-vmx
-%dir %{_libdir}/vmware/lib
-%{_libdir}/vmware/config
-%if %{with internal_libs}
-%attr(755,root,root) %{_libdir}/vmware/bin/vmplayer
-%attr(755,root,root) %{_libdir}/vmware/lib/lib*
-%attr(755,root,root) %{_libdir}/vmware/lib/wrapper-gtk24.sh
+%post	-n kernel%{_alt_kernel}-misc-vsock
+%depmod %{_kernel_ver}
 
-%dir %{_libdir}/vmware/libconf
-%dir %{_libdir}/vmware/libconf/etc
-%{_libdir}/vmware/libconf/etc/fonts
-%{_libdir}/vmware/libconf/etc/gtk-2.0
-%{_libdir}/vmware/libconf/etc/pango
-%dir %{_libdir}/vmware/libconf/lib
-%dir %{_libdir}/vmware/libconf/lib/gtk-2.0
-%dir %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0
-%dir %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/engines
-%attr(755,root,root) %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/engines/*.so
-%dir %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/immodules
-%attr(755,root,root) %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/immodules/*.so
-%dir %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/loaders
-%attr(755,root,root) %{_libdir}/vmware/libconf/lib/gtk-2.0/2.10.0/loaders/*.so
-%dir %{_libdir}/vmware/libconf/lib/pango
-%dir %{_libdir}/vmware/libconf/lib/pango/1.5.0
-%dir %{_libdir}/vmware/libconf/lib/pango/1.5.0/modules
-%attr(755,root,root) %{_libdir}/vmware/libconf/lib/pango/1.5.0/modules/*.so
-%else
-# package old openssl (buggy but needed to work)
-%dir %{_libdir}/vmware/lib/libcrypto.so.0.9.7
-%attr(755,root,root) %{_libdir}/vmware/lib/libcrypto.so.0.9.7/libcrypto.so.0.9.7
-%dir %{_libdir}/vmware/lib/libssl.so.0.9.7
-%attr(755,root,root) %{_libdir}/vmware/lib/libssl.so.0.9.7/libssl.so.0.9.7
-%endif
-%dir %{_libdir}/vmware/messages
-%lang(en) %{_libdir}/vmware/messages/en
-%lang(ja) %{_libdir}/vmware/messages/ja
-%{_libdir}/vmware/share
-%{_libdir}/vmware/xkeymap
-%attr(1777,root,root) %dir /var/run/vmware
-%{_iconsdir}/hicolor/*/*/*.png
-%{_iconsdir}/hicolor/*/*/*.svg
-%{_pixmapsdir}/*.png
-%{_desktopdir}/%{name}.desktop
-
-%files debug
-%defattr(644,root,root,755)
-%dir %{_libdir}/vmware/bin-debug
-# warning: SUID !!!
-%attr(4755,root,root) %{_libdir}/vmware/bin-debug/vmware-vmx
-
-%files help
-%defattr(644,root,root,755)
-%{_libdir}/vmware/help*
-
-%files networking
-%defattr(644,root,root,755)
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vmware/vmnet.conf
-%attr(754,root,root) /etc/rc.d/init.d/vmnet
-%attr(755,root,root) %{_bindir}/vmnet-bridge
-%attr(755,root,root) %{_bindir}/vmnet-detect
-%attr(755,root,root) %{_bindir}/vmnet-dhcpd
-%attr(755,root,root) %{_bindir}/vmnet-natd
-%attr(755,root,root) %{_bindir}/vmnet-netifup
-%attr(755,root,root) %{_bindir}/vmnet-sniffer
-%attr(755,root,root) %{_bindir}/vmware-ping
-%dir %{_sysconfdir}/vmware/vmnet8
-%dir %{_sysconfdir}/vmware/vmnet8/dhcpd
-%dir %{_sysconfdir}/vmware/vmnet8/nat
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.conf
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vmware/vmnet8/nat/nat.conf
-%verify(not md5 mtime size) %{_sysconfdir}/vmware/vmnet8/dhcpd/dhcpd.leases*
-
-%endif
+%postun -n kernel%{_alt_kernel}-misc-vsock
+%depmod %{_kernel_ver}
 
 %if %{with kernel}
+%files -n kernel%{_alt_kernel}-misc-vmblock
+%defattr(644,root,root,755)
+/lib/modules/%{_kernel_ver}/misc/vmblock.ko*
+
+%files -n kernel%{_alt_kernel}-misc-vmci
+%defattr(644,root,root,755)
+/lib/modules/%{_kernel_ver}/misc/vmci.ko*
+
 %files -n kernel%{_alt_kernel}-misc-vmmon
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmmon.ko*
@@ -451,4 +333,7 @@ fi
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmnet.ko*
 
+%files -n kernel%{_alt_kernel}-misc-vsock
+%defattr(644,root,root,755)
+/lib/modules/%{_kernel_ver}/misc/vsock.ko*
 %endif

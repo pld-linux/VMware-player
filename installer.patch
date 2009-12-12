@@ -1,0 +1,56 @@
+--- VMware-player-3.0.0.203739/install.sh	2009-12-12 18:04:16.883512711 +0200
++++ VMware-player-3.0.0.203739/install.sh	2009-12-12 17:57:25.533346342 +0200
+@@ -18,7 +18,7 @@
+    fi
+ 
+    # dash flips out of $opts is quoted, so don't.
+-   exec /usr/bin/env bash $opts "$SOURCE" "$@"
++   exec /usr/bin/env bash $opts "$0" "$@"
+    echo "Unable to restart with bash shell"
+    exit 1
+ fi
+@@ -85,7 +85,7 @@
+    fi
+ }
+ 
+-trap on_exit EXIT
++#trap on_exit EXIT
+ trap "" USR1
+ 
+ # Retrives and sets the various lengths that are extracted from the
+@@ -182,7 +182,7 @@
+ # Returns:
+ #    None
+ extract_self() {
+-   VMIS_TEMP=`mktemp -d /tmp/vmis.XXXXXX`
++   VMIS_TEMP=$(pwd)
+    local file="$SOURCE"
+    local filter=""
+    local bootstrapper="$PREPAYLOAD"/bootstrapper-gtk
+@@ -213,7 +213,7 @@
+ }
+ 
+ extract_prepayload() {
+-   PREPAYLOAD=`mktemp -d /tmp/vmis.XXXXXX`
++   PREPAYLOAD=$(pwd)
+    local file="$SOURCE"
+ 
+    if [ ! -d "$PREPAYLOAD" ]; then
+@@ -568,6 +568,7 @@
+       esac
+    fi
+ 
++   if [ ! -d install ]; then
+    if ! set_lengths "$SOURCE"; then
+       echo "Unable to extract lengths from bundle."
+       exit 1
+@@ -575,6 +576,9 @@
+ 
+    extract_prepayload
+    extract_self
++   else
++	   VMIS_TEMP=$(pwd)
++   fi
+ 
+    install "$VMIS_TEMP" "$help" "$fullpath" "$extract" "$@"
+ }
