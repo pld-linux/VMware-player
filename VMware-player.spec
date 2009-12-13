@@ -1,6 +1,5 @@
 # TODO
 # - sync modules -pl
-# - curl needs built with c-ares for vmware to accept it
 # Conditional build:
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	kernel		# don't build kernel modules
@@ -44,6 +43,7 @@ BuildRequires:	sed >= 4.0
 Requires:	atk
 Requires:	cairo
 Requires:	cairomm
+Requires:	curl-libs >= 7.19.7-2
 Requires:	expat
 Requires:	fontconfig-libs
 Requires:	freetype
@@ -57,6 +57,8 @@ Requires:	libart_lgpl
 Requires:	libgcc
 Requires:	libpng
 Requires:	librsvg
+Requires:	libsexy
+Requires:	libsexymm
 Requires:	libsigc++
 Requires:	libstdc++
 Requires:	libview >= 0.5.5-2
@@ -328,6 +330,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %postun -n kernel%{_alt_kernel}-misc-vsock
 %depmod %{_kernel_ver}
+
+%if %{with userspace}
+%files
+%defattr(644,root,root,755)
+%endif
 
 %if %{with kernel}
 %files -n kernel%{_alt_kernel}-misc-vmblock
