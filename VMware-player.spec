@@ -1,5 +1,6 @@
 # TODO
 # - sync modules -pl
+# - curl needs built with c-ares for vmware to accept it
 # Conditional build:
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	kernel		# don't build kernel modules
@@ -40,9 +41,39 @@ URL:		http://www.vmware.com/
 %{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7}
 BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
-Requires:	libgnomecanvasmm
+Requires:	atk
+Requires:	cairo
+Requires:	cairomm
+Requires:	expat
+Requires:	fontconfig-libs
+Requires:	freetype
+Requires:	glib2
+Requires:	glibmm
+Requires:	gtk+2
+Requires:	gtkmm
+Requires:	gtkmm-atk
+Requires:	libarchive
+Requires:	libart_lgpl
+Requires:	libgcc
+Requires:	libpng
+Requires:	librsvg
+Requires:	libsigc++
+Requires:	libstdc++
 Requires:	libview >= 0.5.5-2
+Requires:	libxml2
 Requires:	openssl >= 0.9.7
+Requires:	pango
+Requires:	pangomm
+Requires:	xorg-lib-libXau
+Requires:	xorg-lib-libXcomposite
+Requires:	xorg-lib-libXcursor
+Requires:	xorg-lib-libXdamage
+Requires:	xorg-lib-libXdmcp
+Requires:	xorg-lib-libXfixes
+Requires:	xorg-lib-libXft
+Requires:	xorg-lib-libXinerama
+Requires:	xorg-lib-libXrandr
+Requires:	xorg-lib-libXrender
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
