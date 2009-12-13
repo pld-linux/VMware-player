@@ -1,3 +1,5 @@
+# TODO
+# - sync modules -pl
 # Conditional build:
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	kernel		# don't build kernel modules
@@ -110,15 +112,14 @@ Requires(postun):	%releq_kernel
 %endif
 
 %description -n kernel%{_alt_kernel}-misc-vmci
-Linux kernel module acting as VMware Virtual Machine Communication
-Interface (VMCI).
+VMware Virtual Machine Communication Interface (VMCI).
 
 %description -n kernel%{_alt_kernel}-misc-vmci -l pl.UTF-8
 Moduł jądra Linuksa będący interfejsem komunikacyjnym VMware (VMCI -
 Virtual Machine Communication Interface).
 
 %package -n kernel%{_alt_kernel}-misc-vmblock
-Summary:	Kernel module for VMware Player
+Summary:	VMware Blocking File System
 Summary(pl.UTF-8):	Moduł jądra dla VMware Player
 Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
@@ -130,13 +131,13 @@ Requires(postun):	%releq_kernel
 %endif
 
 %description -n kernel%{_alt_kernel}-misc-vmblock
-Kernel modules for VMware Player - vmblock.
+VMware Blocking File System.
 
 %description -n kernel%{_alt_kernel}-misc-vmblock -l pl.UTF-8
 Moduły jądra dla VMware Player - vmblock.
 
 %package -n kernel%{_alt_kernel}-misc-vmmon
-Summary:	Kernel module for VMware Player
+Summary:	VMware Virtual Machine Monitor
 Summary(pl.UTF-8):	Moduł jądra dla VMware Player
 Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
@@ -148,13 +149,13 @@ Requires(postun):	%releq_kernel
 %endif
 
 %description -n kernel%{_alt_kernel}-misc-vmmon
-Kernel modules for VMware Player - vmmon.
+VMware Virtual Machine Monitor.
 
 %description -n kernel%{_alt_kernel}-misc-vmmon -l pl.UTF-8
 Moduły jądra dla VMware Player - vmmon.
 
 %package -n kernel%{_alt_kernel}-misc-vmnet
-Summary:	Kernel module for VMware Player
+Summary:	VMware Virtual Networking Driver
 Summary(pl.UTF-8):	Moduł jądra dla VMware Player
 Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
@@ -166,13 +167,13 @@ Requires(postun):	%releq_kernel
 %endif
 
 %description -n kernel%{_alt_kernel}-misc-vmnet
-Kernel modules for VMware Player - vmnet.
+VMware Virtual Networking Driver.
 
 %description -n kernel%{_alt_kernel}-misc-vmnet -l pl.UTF-8
 Moduły jądra dla VMware Player - vmnet.
 
 %package -n kernel%{_alt_kernel}-misc-vsock
-Summary:	VMware Virtual Socket Family support
+Summary:	VMware Virtual Socket Family
 Summary(pl.UTF-8):	Obsługa Virtual Socket Family - rodziny gniazd wirtualnych VMware
 Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
@@ -185,7 +186,7 @@ Requires(postun):	%releq_kernel
 Requires:	kernel%{_alt_kernel}-misc-vmci = %{version}-%{rel}@%{_kernel_ver_str}
 
 %description -n kernel%{_alt_kernel}-misc-vsock
-Linux kernel module supporting VMware Virtual Socket Family.
+VMware Virtual Socket Family.
 
 %description -n kernel%{_alt_kernel}-misc-vsock -l pl.UTF-8
 Moduł jądra Linuksa obsługujący rodzinę gniazd wirtualnych VMware
@@ -221,25 +222,6 @@ rm -rf binary # unusable
 cd -
 
 find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
-
-%if 0
-# build our local install.sh
-# grab offsets
-%{__sed} -ne "/^### Offsets ###/,/^### End offsets/{s,\$0,\$SOURCE,;p}" blob.sh > install.sh
-# grab product name
-%{__grep} ^PRODUCT_NAME= blob.sh >> install.sh
-# install set_lengths function
-%{__sed} -ne "/^set_lengths/,/^}/p" blob.sh >> install.sh
-cat <<'EOF' >> install.sh
-set_lengths $SOURCE
-dd if="$SOURCE" ibs=$LAUNCHER_SIZE obs=1024 skip=1 | tar xz
-dd if="$SOURCE" ibs=$SKIP_BYTES obs=1024 skip=1 | tar xz
-EOF
-sh -x install.sh
-
-sed -e "s,@@VMWARE_INSTALLER@,$(PWD)/install," install/vmware-installer/bootstrap > install/bootstrap
-. install/bootstrap
-%endif
 
 %build
 %if %{with kernel}
