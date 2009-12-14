@@ -52,6 +52,7 @@ Requires:	glibmm
 Requires:	gtk+2
 Requires:	gtkmm
 Requires:	gtkmm-atk
+Requires:	libaio
 Requires:	libarchive
 Requires:	libart_lgpl
 Requires:	libgcc
