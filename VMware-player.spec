@@ -9,9 +9,6 @@
 %if %{without kernel}
 %undefine	with_dist_kernel
 %endif
-%ifarch %{x8664}
-%undefine	with_userspace
-%endif
 
 %define		ver		16.1.2
 %define		buildid		17966106
@@ -77,6 +74,7 @@ ExclusiveArch:	%{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_noautoprovfiles %{_libdir}/vmware/lib/.*\.so.*
+%define		skip_post_check_so	.*%{_libdir}/vmware/lib/.*
 
 %define		debug_package	%{nil}
 
@@ -206,6 +204,48 @@ rm -rf $RPM_BUILD_ROOT
 %install_kernel_modules -m bundles/vmware-vmx/lib/modules/vmnet-only/vmnet -d misc
 %endif
 
+%if %{with userspace}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_sbindir},%{_libdir}/vmware,%{_prefix}/lib/cups/filter,%{_datadir}/{appdata,mime/packages},%{_desktopdir},%{_pixmapsdir},%{_iconsdir},%{_sysconfdir}/{cups,thnuclnt,vmware}}
+
+install bundles/vmware-network-editor/lib/libvmware-netcfg.so/libvmware-netcfg.so $RPM_BUILD_ROOT%{_libdir}
+
+# TODO: ovftool?
+
+#cp -p bundles/vmware-player/lib/share/pixmaps/*.png $RPM_BUILD_ROOT%{_pixmapsdir}
+
+install bundles/vmware-player-app/bin/* $RPM_BUILD_ROOT%{_bindir}
+cp -p bundles/vmware-player-app/etc/cups/* $RPM_BUILD_ROOT%{_sysconfdir}/cups
+cp -p bundles/vmware-player-app/extras/.thnumod $RPM_BUILD_ROOT%{_sysconfdir}/thnuclnt
+cp -p bundles/vmware-player-app/extras/thnucups $RPM_BUILD_ROOT%{_prefix}/lib/cups/filter
+cp -pr bundles/vmware-player-app/lib/* $RPM_BUILD_ROOT%{_libdir}/vmware
+cp -pr bundles/vmware-player-app/share/appdata/* $RPM_BUILD_ROOT%{_datadir}/appdata
+%{__sed} -e 's,@@BINARY@@,%{_bindir}/vmplayer,' bundles/vmware-player-app/share/applications/vmware-player.desktop >$RPM_BUILD_ROOT%{_desktopdir}/vmware-player.desktop
+cp -pr bundles/vmware-player-app/share/icons/hicolor $RPM_BUILD_ROOT%{_iconsdir}
+cp -pr bundles/vmware-player-app/share/mime/packages/* $RPM_BUILD_ROOT%{_datadir}/mime/packages
+for f in vmplayer vmware-enter-serial vmware-setup-helper licenseTool vmware-{mount,fuseUI,app-control,zenity} ; do
+	ln -sf appLoader $RPM_BUILD_ROOT%{_libdir}/vmware/bin/$f
+done
+ln -s ../%{_lib}/vmware/bin/vmware-mount $RPM_BUILD_ROOT%{_bindir}/vmware-mount
+ln -s ../%{_lib}/vmware/bin/vmware-netcfg $RPM_BUILD_ROOT%{_bindir}/vmware-netcfg
+ln -s ../%{_lib}/vmware/bin/vmware-fuseUI $RPM_BUILD_ROOT%{_bindir}/vmware-fuseUI
+ln -s ../%{_lib}/vmware/bin/appLoader $RPM_BUILD_ROOT%{_bindir}/vmrest
+
+install -D bundles/vmware-player-setup/vmware-config $RPM_BUILD_ROOT%{_libdir}/vmware/setup/vmware-config
+
+install bundles/vmware-usbarbitrator/bin/vmware-usbarbitrator $RPM_BUILD_ROOT%{_libdir}/vmware/bin
+
+install bundles/vmware-vmx/bin/* $RPM_BUILD_ROOT%{_bindir}
+install bundles/vmware-vmx/sbin/* $RPM_BUILD_ROOT%{_sbindir}
+cp -pr bundles/vmware-vmx/lib/* $RPM_BUILD_ROOT%{_libdir}/vmware
+install -d $RPM_BUILD_ROOT%{_libdir}/vmware/{modules,roms}
+cp -p bundles/vmware-vmx/extra/modules.xml $RPM_BUILD_ROOT%{_libdir}/vmware/modules
+cp -pr bundles/vmware-vmx/roms/* $RPM_BUILD_ROOT%{_libdir}/vmware/roms
+for f in vmware-{modonfig,modconfig-console,gksu,vmblock-fuse} ; do
+	ln -sf appLoader $RPM_BUILD_ROOT%{_libdir}/vmware/bin/$f
+done
+
+%endif
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -224,8 +264,11 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with userspace}
 %files
 %defattr(644,root,root,755)
+# bin/vmware-vmx SUID
+# %{_sbindir}/vmware-authd SUID
 %endif
 
+%if %{with kernel}
 %files -n kernel%{_alt_kernel}-misc-vmmon
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmmon.ko*
@@ -233,3 +276,4 @@ rm -rf $RPM_BUILD_ROOT
 %files -n kernel%{_alt_kernel}-misc-vmnet
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmnet.ko*
+%endif
