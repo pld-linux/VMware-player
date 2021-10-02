@@ -1,5 +1,3 @@
-# TODO
-# - sync modules -pl
 #
 # Conditional build:
 %bcond_without	dist_kernel	# without distribution kernel
@@ -134,8 +132,8 @@ VMware networking utilities.
 Narzędzia VMware do obsługi sieci.
 
 %package -n kernel%{_alt_kernel}-misc-vmmon
-Summary:	VMware Virtual Machine Monitor
-Summary(pl.UTF-8):	Moduł jądra dla VMware Player
+Summary:	VMware Virtual Machine Monitor kernel module
+Summary(pl.UTF-8):	Moduł jądra VMware Virtual Machine Monitor - monitor maszyny wirtualnej
 Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
@@ -146,14 +144,15 @@ Requires(postun):	%releq_kernel
 %endif
 
 %description -n kernel%{_alt_kernel}-misc-vmmon
-VMware Virtual Machine Monitor.
+VMware Virtual Machine Monitor kernel module.
 
 %description -n kernel%{_alt_kernel}-misc-vmmon -l pl.UTF-8
-Moduły jądra dla VMware Player - vmmon.
+Moduł jądra VMware Virtual Machine Monitor - monitor maszyny
+wirtualnej.
 
 %package -n kernel%{_alt_kernel}-misc-vmnet
-Summary:	VMware Virtual Networking Driver
-Summary(pl.UTF-8):	Moduł jądra dla VMware Player
+Summary:	VMware Virtual Networking Driver kernel module
+Summary(pl.UTF-8):	Moduł jądra VMware Virtual Networking Driver - sterownik sieciowy maszyny wirtualnej
 Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
@@ -167,7 +166,8 @@ Requires(postun):	%releq_kernel
 VMware Virtual Networking Driver.
 
 %description -n kernel%{_alt_kernel}-misc-vmnet -l pl.UTF-8
-Moduły jądra dla VMware Player - vmnet.
+Moduł jądra VMware Virtual Networking Driver - sterownik sieciowy
+maszyny wirtualnej.
 
 %prep
 %setup -qcT
