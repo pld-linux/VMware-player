@@ -125,7 +125,7 @@ Group:		Applications/Emulators
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name} = %{version}-%{release}
 Requires:	rc-scripts
-Obsoletes:	VMware-Player-samba
+Obsoletes:	VMware-player-samba < 2.0
 
 %description networking
 VMware networking utilities.
