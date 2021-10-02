@@ -1,6 +1,6 @@
---- VMware-player-3.0.0.203739/install.sh	2009-12-12 18:04:16.883512711 +0200
-+++ VMware-player-3.0.0.203739/install.sh	2009-12-12 17:57:25.533346342 +0200
-@@ -18,7 +18,7 @@
+--- VMware-player-16.1.2.17966106/install.sh.orig	2021-10-02 16:18:51.036146585 +0200
++++ VMware-player-16.1.2.17966106/install.sh	2021-10-02 16:19:43.259477667 +0200
+@@ -18,7 +18,7 @@ if [ -z "$BASH" ]; then
     fi
  
     # dash flips out of $opts is quoted, so don't.
@@ -9,7 +9,7 @@
     echo "Unable to restart with bash shell"
     exit 1
  fi
-@@ -85,7 +85,7 @@
+@@ -85,7 +85,7 @@ on_exit() {
     fi
  }
  
@@ -18,7 +18,7 @@
  trap "" USR1
  
  # Retrives and sets the various lengths that are extracted from the
-@@ -182,7 +182,7 @@
+@@ -182,7 +182,7 @@ is_relative() {
  # Returns:
  #    None
  extract_self() {
@@ -26,8 +26,8 @@
 +   VMIS_TEMP=$(pwd)
     local file="$SOURCE"
     local filter=""
-    local bootstrapper="$PREPAYLOAD"/bootstrapper-gtk
-@@ -213,7 +213,7 @@
+ 
+@@ -206,7 +206,7 @@ extract_self() {
  }
  
  extract_prepayload() {
@@ -36,7 +36,7 @@
     local file="$SOURCE"
  
     if [ ! -d "$PREPAYLOAD" ]; then
-@@ -568,6 +568,7 @@
+@@ -575,6 +575,7 @@ main() {
        esac
     fi
  
@@ -44,7 +44,7 @@
     if ! set_lengths "$SOURCE"; then
        echo "Unable to extract lengths from bundle."
        exit 1
-@@ -575,6 +576,9 @@
+@@ -582,6 +583,9 @@ main() {
  
     extract_prepayload
     extract_self
