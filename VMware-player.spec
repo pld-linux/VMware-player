@@ -42,22 +42,14 @@ Requires:	fontconfig-libs
 Requires:	freetype
 Requires:	glib2
 Requires:	glibmm
-Requires:	gtk+2
-Requires:	gtkmm
-Requires:	gtkmm-atk
 Requires:	libaio
-Requires:	libarchive
-Requires:	libart_lgpl
 Requires:	libgcc
 Requires:	libpng
 Requires:	librsvg
-Requires:	libsexy
-Requires:	libsexymm
 Requires:	libsigc++
 Requires:	libstdc++
-Requires:	libview >= 0.5.5-2
 Requires:	libxml2
-Requires:	openssl >= 0.9.7
+#Requires:	openssl >= 1.0.2
 Requires:	pango
 Requires:	pangomm
 Requires:	xorg-lib-libXau
