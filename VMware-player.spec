@@ -180,10 +180,17 @@ chmod a+x install.sh
 
 ./install.sh --extract bundles
 
+%if %{with kernel}
 cd bundles/vmware-vmx/lib/modules
 %{__tar} xf source/vmmon.tar
 %{__tar} xf source/vmnet.tar
 cd -
+%endif
+
+%if %{with userspace}
+%{__sed} -i -e '1s,/usr/bin/env bash,/bin/bash,' bundles/vmware-player-app/bin/{vmplayer,vmware-license-{check,enter}.sh}
+%{__sed} -i -e '1s,/usr/bin/env bash,/bin/bash,' bundles/vmware-vmx/bin/vmware-{gksu,modconfig}
+%endif
 
 %build
 %if %{with kernel}
@@ -244,10 +251,38 @@ for f in vmware-{modonfig,modconfig-console,gksu,vmblock-fuse} ; do
 	ln -sf appLoader $RPM_BUILD_ROOT%{_libdir}/vmware/bin/$f
 done
 
+# available in system packages
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libICE.so.6,libSM.so.6,libX11.so.6,libXau.so.6,libXcomposite.so.1,libXcursor.so.1,libXdamage.so.1,libXdmcp.so.6,libXext.so.6,libXfixes.so.3,libXft.so.2,libXi.so.6,libXinerama.so.1,libXrandr.so.2,libXrender.so.1,libXtst.so.6,libxcb.so.1}
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libcairo.so.2,libcairo-gobject.so.2,libcairomm-1.0.so.1,libpixman-1.so.0}
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libatk-1.0.so.0,libatk-bridge-2.0.so.0,libatkmm-1.6.so.1,libatspi.so.0,libcroco-0.6.so.3,libepoxy.so.0,libgailutil-3.so.0,libgck-1.so.0,libgcr-base-3.so.1,libgcr-ui-3.so.1,libgdk-3.so.0,libgdk_pixbuf-2.0.so.0,libgdkmm-3.0.so.1,libgio-2.0.so.0,libgiomm-2.4.so.1,libglib-2.0.so.0,libglibmm-2.4.so.1,libglibmm_generate_extra_defs-2.4.so.1,libgmodule-2.0.so.0,libgobject-2.0.so.0,libgthread-2.0.so.0,libgtk-3.so.0,libgtkmm-3.0.so.1,libpango-1.0.so.0,libpangocairo-1.0.so.0,libpangoft2-1.0.so.0,libpangomm-1.4.so.1,librsvg-2.so.2,libsigc-2.0.so.0,libvte-2.91.so.0}
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/libconf/etc/gtk-3.0
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/libconf/lib/gtk-3.0
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libgcc_s.so.1,libstdc++.so.6}
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libgcrypt.so.20,libgpg-error.so.0,libtasn1.so.6}
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libaio.so.1
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libcurl.so.4
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libdbus-1.so.3
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libexpat.so.1
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libfontconfig.so.1
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/libconf/etc/fonts
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libfreetype.so.6
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libfuse.so.2
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libharfbuzz.so.0
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libjpeg.so.62
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libp11-kit.so.0
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libpcre.so.1
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libpcsclite.so.1
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libpng16.so.16
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libtiff.so.5
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libxml2.so.2
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libz.so.1
 %endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%post	-p /sbin/ldconfig
+%postun	-p /sbin/ldconfig
 
 %post	-n kernel%{_alt_kernel}-misc-vmmon
 %depmod %{_kernel_ver}
@@ -264,8 +299,117 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with userspace}
 %files
 %defattr(644,root,root,755)
-# bin/vmware-vmx SUID
-# %{_sbindir}/vmware-authd SUID
+%attr(755,root,root) %{_bindir}/vmnet-bridge
+%attr(755,root,root) %{_bindir}/vmnet-dhcpd
+%attr(755,root,root) %{_bindir}/vmnet-natd
+%attr(755,root,root) %{_bindir}/vmnet-netifup
+%attr(755,root,root) %{_bindir}/vmnet-sniffer
+%attr(755,root,root) %{_bindir}/vmplayer
+%attr(755,root,root) %{_bindir}/vmrest
+%attr(755,root,root) %{_bindir}/vmware-collect-host-support-info
+%attr(755,root,root) %{_bindir}/vmware-fuseUI
+%attr(755,root,root) %{_bindir}/vmware-gksu
+%attr(755,root,root) %{_bindir}/vmware-license-check.sh
+%attr(755,root,root) %{_bindir}/vmware-license-enter.sh
+%attr(755,root,root) %{_bindir}/vmware-modconfig
+%attr(755,root,root) %{_bindir}/vmware-mount
+%attr(755,root,root) %{_bindir}/vmware-netcfg
+%attr(755,root,root) %{_bindir}/vmware-networks
+%attr(755,root,root) %{_bindir}/vmware-ping
+%attr(4755,root,root) %{_sbindir}/vmware-authd
+%attr(755,root,root) %{_sbindir}/vmware-authdlauncher
+%attr(755,root,root) %{_libdir}/libvmware-netcfg.so
+%dir %{_libdir}/vmware
+%dir %{_libdir}/vmware/bin
+%attr(755,root,root) %{_libdir}/vmware/bin/appLoader
+%attr(755,root,root) %{_libdir}/vmware/bin/fusermount
+%attr(755,root,root) %{_libdir}/vmware/bin/licenseTool
+%attr(755,root,root) %{_libdir}/vmware/bin/mkisofs
+%attr(755,root,root) %{_libdir}/vmware/bin/swagger.zip
+%attr(755,root,root) %{_libdir}/vmware/bin/thnuclnt
+%attr(755,root,root) %{_libdir}/vmware/bin/tpm2emu
+%attr(755,root,root) %{_libdir}/vmware/bin/vmplayer
+%attr(755,root,root) %{_libdir}/vmware/bin/vmrest
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-app-control
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-enter-serial
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-fuseUI
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-gksu
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-modconfig-console
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-modonfig
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-mount
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-remotemks
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-setup-helper
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-usbarbitrator
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-vmblock-fuse
+%attr(4755,root,root) %{_libdir}/vmware/bin/vmware-vmx
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-vmx-debug
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-vmx-stats
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-zenity
+%{_libdir}/vmware/config
+%dir %{_libdir}/vmware/configurator
+%{_libdir}/vmware/configurator/vmnet-dhcpd.conf
+%{_libdir}/vmware/configurator/vmnet-nat.conf
+%{_libdir}/vmware/icu
+%dir %{_libdir}/vmware/include
+%{_libdir}/vmware/include/vmci
+%{_libdir}/vmware/isoimages
+%dir %{_libdir}/vmware/lib
+%attr(755,root,root) %{_libdir}/vmware/lib/libbasichttp.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libcds.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libgvmomi.so
+%attr(755,root,root) %{_libdir}/vmware/lib/liblicenseTool.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libsvga3dsw.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmplayer.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmware-app-control.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmware-enter-serial.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmware-fuseUI.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmware-gksu.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmware-modconfig.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmware-modconfig-console.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmware-mount.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmware-setup-helper.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmware-vmblock-fuse.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmware-zenity.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmwarebase.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvmwareui.so
+%attr(755,root,root) %{_libdir}/vmware/lib/libvnetlib.so
+# openssl 1.0.2X
+%attr(755,root,root) %{_libdir}/vmware/lib/libcrypto.so.1.0.2
+%attr(755,root,root) %{_libdir}/vmware/lib/libssl.so.1.0.2
+# libffi >= 3.0.11 < 3.2
+%attr(755,root,root) %{_libdir}/vmware/lib/libffi.so.6
+%dir %{_libdir}/vmware/libconf
+%dir %{_libdir}/vmware/libconf/etc
+%dir %{_libdir}/vmware/libconf/lib
+%{_libdir}/vmware/licenses
+%{_libdir}/vmware/modules
+%{_libdir}/vmware/resources
+%{_libdir}/vmware/roms
+%{_libdir}/vmware/scripts
+%dir %{_libdir}/vmware/setup
+%attr(755,root,root) %{_libdir}/vmware/setup/vmware-config
+%dir %{_libdir}/vmware/share
+%{_libdir}/vmware/share/icons
+%{_libdir}/vmware/share/pixmaps
+%{_libdir}/vmware/share/themes
+%{_libdir}/vmware/tools-upgraders
+%{_libdir}/vmware/vnckeymap
+%{_libdir}/vmware/xkeymap
+%{_libdir}/vmware/vixwrapper-product-config.txt
+%{_datadir}/appdata/vmware-player.appdata.xml
+%{_desktopdir}/vmware-player.desktop
+%{_iconsdir}/hicolor/*x*/apps/vmware-player.png
+%{_iconsdir}/hicolor/*x*/mimetypes/application-certificate.png
+%{_iconsdir}/hicolor/*x*/mimetypes/application-x-vmware-*.png
+%{_iconsdir}/hicolor/scalable/mimetypes/application-certificate.svg
+%{_iconsdir}/hicolor/scalable/mimetypes/application-x-vmware-*.svg
+%{_datadir}/mime/packages/vmware-player.xml
+
+# cups
+%{_sysconfdir}/cups/thnuclnt.convs
+%{_sysconfdir}/cups/thnuclnt.types
+%{_sysconfdir}/thnuclnt/.thnumod
+%attr(755,root,root) %{_prefix}/lib/cups/filter/thnucups
 %endif
 
 %if %{with kernel}
