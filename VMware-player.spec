@@ -65,7 +65,9 @@ Requires:	xorg-lib-libXrender
 ExclusiveArch:	%{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_noautoprovfiles %{_libdir}/vmware/lib/.*\.so.*
+# private libraries shouldn't provide sonames
+%define		_noautoprovfiles	%{_libdir}/vmware/lib/.*\.so.*
+%define		_noautoreq		libcrypto.so.1.0.2 libssl.so.1.0.2 libbasichttp.so libcds.so libgvmomi.so libvmwarebase.so libvmwareui.so libvnetlib.so
 %define		skip_post_check_so	.*%{_libdir}/vmware/lib/.*
 
 %define		debug_package	%{nil}
@@ -242,6 +244,9 @@ cp -pr bundles/vmware-vmx/roms/* $RPM_BUILD_ROOT%{_libdir}/vmware/roms
 for f in vmware-{modonfig,modconfig-console,gksu,vmblock-fuse} ; do
 	ln -sf appLoader $RPM_BUILD_ROOT%{_libdir}/vmware/bin/$f
 done
+
+# for autoreq to work
+chmod 755 $RPM_BUILD_ROOT%{_libdir}/vmware/lib/lib*/lib*.so*
 
 # available in system packages
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libICE.so.6,libSM.so.6,libX11.so.6,libXau.so.6,libXcomposite.so.1,libXcursor.so.1,libXdamage.so.1,libXdmcp.so.6,libXext.so.6,libXfixes.so.3,libXft.so.2,libXi.so.6,libXinerama.so.1,libXrandr.so.2,libXrender.so.1,libXtst.so.6,libxcb.so.1}
