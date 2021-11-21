@@ -35,23 +35,19 @@ BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
 Requires:	atk
 Requires:	cairo
-Requires:	cairomm
 Requires:	curl-libs >= 7.19.7-2
 Requires:	expat
 Requires:	fontconfig-libs
 Requires:	freetype
 Requires:	glib2
-Requires:	glibmm
 Requires:	libaio
 Requires:	libgcc
 Requires:	libpng
 Requires:	librsvg
-Requires:	libsigc++
 Requires:	libstdc++
 Requires:	libxml2
 #Requires:	openssl >= 1.0.2
 Requires:	pango
-Requires:	pangomm
 Requires:	xorg-lib-libXau
 Requires:	xorg-lib-libXcomposite
 Requires:	xorg-lib-libXcursor
@@ -241,7 +237,7 @@ cp -pr bundles/vmware-vmx/lib/* $RPM_BUILD_ROOT%{_libdir}/vmware
 install -d $RPM_BUILD_ROOT%{_libdir}/vmware/{modules,roms}
 cp -p bundles/vmware-vmx/extra/modules.xml $RPM_BUILD_ROOT%{_libdir}/vmware/modules
 cp -pr bundles/vmware-vmx/roms/* $RPM_BUILD_ROOT%{_libdir}/vmware/roms
-for f in vmware-{modonfig,modconfig-console,gksu,vmblock-fuse} ; do
+for f in vmware-{modconfig,modconfig-console,gksu,vmblock-fuse} ; do
 	ln -sf appLoader $RPM_BUILD_ROOT%{_libdir}/vmware/bin/$f
 done
 
@@ -250,8 +246,8 @@ chmod 755 $RPM_BUILD_ROOT%{_libdir}/vmware/lib/lib*/lib*.so*
 
 # available in system packages
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libICE.so.6,libSM.so.6,libX11.so.6,libXau.so.6,libXcomposite.so.1,libXcursor.so.1,libXdamage.so.1,libXdmcp.so.6,libXext.so.6,libXfixes.so.3,libXft.so.2,libXi.so.6,libXinerama.so.1,libXrandr.so.2,libXrender.so.1,libXtst.so.6,libxcb.so.1}
-%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libcairo.so.2,libcairo-gobject.so.2,libcairomm-1.0.so.1,libpixman-1.so.0}
-%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libatk-1.0.so.0,libatk-bridge-2.0.so.0,libatkmm-1.6.so.1,libatspi.so.0,libcroco-0.6.so.3,libepoxy.so.0,libgailutil-3.so.0,libgck-1.so.0,libgcr-base-3.so.1,libgcr-ui-3.so.1,libgdk-3.so.0,libgdk_pixbuf-2.0.so.0,libgdkmm-3.0.so.1,libgio-2.0.so.0,libgiomm-2.4.so.1,libglib-2.0.so.0,libglibmm-2.4.so.1,libglibmm_generate_extra_defs-2.4.so.1,libgmodule-2.0.so.0,libgobject-2.0.so.0,libgthread-2.0.so.0,libgtk-3.so.0,libgtkmm-3.0.so.1,libpango-1.0.so.0,libpangocairo-1.0.so.0,libpangoft2-1.0.so.0,libpangomm-1.4.so.1,librsvg-2.so.2,libsigc-2.0.so.0,libvte-2.91.so.0}
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libcairo.so.2,libcairo-gobject.so.2,libpixman-1.so.0}
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libatk-1.0.so.0,libatk-bridge-2.0.so.0,libatspi.so.0,libcroco-0.6.so.3,libepoxy.so.0,libgailutil-3.so.0,libgck-1.so.0,libgcr-base-3.so.1,libgcr-ui-3.so.1,libgdk-3.so.0,libgdk_pixbuf-2.0.so.0,libgio-2.0.so.0,libglib-2.0.so.0,libgmodule-2.0.so.0,libgobject-2.0.so.0,libgthread-2.0.so.0,libgtk-3.so.0,libpango-1.0.so.0,libpangocairo-1.0.so.0,libpangoft2-1.0.so.0,librsvg-2.so.2,libvte-2.91.so.0}
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/libconf/etc/gtk-3.0
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/libconf/lib/gtk-3.0
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libgcc_s.so.1,libstdc++.so.6}
@@ -273,6 +269,26 @@ chmod 755 $RPM_BUILD_ROOT%{_libdir}/vmware/lib/lib*/lib*.so*
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libtiff.so.5
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libxml2.so.2
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libz.so.1
+
+# configuration
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/vmware
+cat >$RPM_BUILD_ROOT%{_sysconfdir}/vmware/bootstrap <<'EOF'
+PREFIX=%{_prefix}
+BINDIR=%{_bindir}
+SBINDIR=%{_sbindir}
+LIBDIR=%{_libdir}
+DATADIR=%{_datadir}
+SYSCONFDIR=%{_sysconfdir}
+DOCDIR=%{_docdir}
+MANDIR=%{_mandir}
+INCLUDEDIR=%{_includedir}
+INITDIR=/etc/rc.d
+INITSCRIPTDIR=/etc/rc.d/init.d
+EOF
+
+cat >$RPM_BUILD_ROOT%{_sysconfdir}/vmware/config <<'EOF'
+libdir=%{_libdir}/vmware
+EOF
 %endif
 
 %clean
@@ -332,7 +348,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vmware/bin/vmware-fuseUI
 %attr(755,root,root) %{_libdir}/vmware/bin/vmware-gksu
 %attr(755,root,root) %{_libdir}/vmware/bin/vmware-modconfig-console
-%attr(755,root,root) %{_libdir}/vmware/bin/vmware-modonfig
+%attr(755,root,root) %{_libdir}/vmware/bin/vmware-modconfig
 %attr(755,root,root) %{_libdir}/vmware/bin/vmware-mount
 %attr(755,root,root) %{_libdir}/vmware/bin/vmware-remotemks
 %attr(755,root,root) %{_libdir}/vmware/bin/vmware-setup-helper
@@ -375,6 +391,16 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vmware/lib/libssl.so.1.0.2
 # libffi >= 3.0.11 < 3.2
 %attr(755,root,root) %{_libdir}/vmware/lib/libffi.so.6
+# libsigc++ 2.x, atkmm, cairomm, glibmm, gtkmm 3.x, pangomm built with pre-C++11 ABI
+%attr(755,root,root) %{_libdir}/vmware/lib/libatkmm-1.6.so.1
+%attr(755,root,root) %{_libdir}/vmware/lib/libcairomm-1.0.so.1
+%attr(755,root,root) %{_libdir}/vmware/lib/libgdkmm-3.0.so.1
+%attr(755,root,root) %{_libdir}/vmware/lib/libgiomm-2.4.so.1
+%attr(755,root,root) %{_libdir}/vmware/lib/libglibmm-2.4.so.1
+%attr(755,root,root) %{_libdir}/vmware/lib/libglibmm_generate_extra_defs-2.4.so.1
+%attr(755,root,root) %{_libdir}/vmware/lib/libgtkmm-3.0.so.1
+%attr(755,root,root) %{_libdir}/vmware/lib/libpangomm-1.4.so.1
+%attr(755,root,root) %{_libdir}/vmware/lib/libsigc-2.0.so.0
 %dir %{_libdir}/vmware/libconf
 %dir %{_libdir}/vmware/libconf/etc
 %dir %{_libdir}/vmware/libconf/lib
@@ -401,6 +427,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_iconsdir}/hicolor/scalable/mimetypes/application-certificate.svg
 %{_iconsdir}/hicolor/scalable/mimetypes/application-x-vmware-*.svg
 %{_datadir}/mime/packages/vmware-player.xml
+%dir %{_sysconfdir}/vmware
+%{_sysconfdir}/vmware/bootstrap
+%{_sysconfdir}/vmware/config
 
 # cups
 %{_sysconfdir}/cups/thnuclnt.convs
