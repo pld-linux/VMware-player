@@ -237,7 +237,7 @@ install bundles/vmware-usbarbitrator/bin/vmware-usbarbitrator $RPM_BUILD_ROOT%{_
 install bundles/vmware-vmx/bin/* $RPM_BUILD_ROOT%{_bindir}
 install bundles/vmware-vmx/sbin/* $RPM_BUILD_ROOT%{_sbindir}
 cp -pr bundles/vmware-vmx/lib/* $RPM_BUILD_ROOT%{_libdir}/vmware
-ln -s ../..%{_libdir}/vmware/lib/icu $RPM_BUILD_ROOT%{_sysconfdir}/vmware/icu
+ln -s ../..%{_libdir}/vmware/icu $RPM_BUILD_ROOT%{_sysconfdir}/vmware/icu
 install -d $RPM_BUILD_ROOT%{_libdir}/vmware/{modules,roms}
 cp -p bundles/vmware-vmx/extra/modules.xml $RPM_BUILD_ROOT%{_libdir}/vmware/modules
 cp -pr bundles/vmware-vmx/roms/* $RPM_BUILD_ROOT%{_libdir}/vmware/roms
