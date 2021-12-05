@@ -33,20 +33,20 @@ URL:		https://www.vmware.com/products/workstation-player.html
 %{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7}
 BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
+Requires(post,postun):	gtk-update-icon-cache
 Requires:	atk
 Requires:	cairo
-Requires:	curl-libs >= 7.19.7-2
 Requires:	expat
 Requires:	fontconfig-libs
 Requires:	freetype
 Requires:	glib2
+Requires:	hicolor-icon-theme
 Requires:	libaio
 Requires:	libgcc
 Requires:	libpng
 Requires:	librsvg
 Requires:	libstdc++
 Requires:	libxml2
-#Requires:	openssl >= 1.0.2
 Requires:	pango
 Requires:	xorg-lib-libXau
 Requires:	xorg-lib-libXcomposite
@@ -202,12 +202,15 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with userspace}
-install -d $RPM_BUILD_ROOT{%{_bindir},%{_sbindir},%{_libdir}/vmware,%{_prefix}/lib/cups/filter,%{_datadir}/{appdata,mime/packages},%{_desktopdir},%{_pixmapsdir},%{_iconsdir},%{_sysconfdir}/{cups,thnuclnt,vmware}}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_sbindir},%{_libdir}/vmware,%{_prefix}/lib/cups/filter,%{_datadir}/{appdata,mime/packages},%{_desktopdir},%{_pixmapsdir},%{_docdir}/vmware-player,%{_iconsdir},%{_sysconfdir}/{cups,thnuclnt,vmware}}
 
 install bundles/vmware-network-editor/lib/libvmware-netcfg.so/libvmware-netcfg.so $RPM_BUILD_ROOT%{_libdir}
 
-# TODO: ovftool?
+# TODO: the rest of ovftool?
+install -d $RPM_BUILD_ROOT%{_prefix}/lib/vmware-ovftool
+cp -p bundles/vmware-ovftool/vmware.eula $RPM_BUILD_ROOT%{_prefix}/lib/vmware-ovftool
 
+cp -p bundles/vmware-player/doc/EULA $RPM_BUILD_ROOT%{_docdir}/vmware-player
 #cp -p bundles/vmware-player/lib/share/pixmaps/*.png $RPM_BUILD_ROOT%{_pixmapsdir}
 
 install bundles/vmware-player-app/bin/* $RPM_BUILD_ROOT%{_bindir}
@@ -234,12 +237,17 @@ install bundles/vmware-usbarbitrator/bin/vmware-usbarbitrator $RPM_BUILD_ROOT%{_
 install bundles/vmware-vmx/bin/* $RPM_BUILD_ROOT%{_bindir}
 install bundles/vmware-vmx/sbin/* $RPM_BUILD_ROOT%{_sbindir}
 cp -pr bundles/vmware-vmx/lib/* $RPM_BUILD_ROOT%{_libdir}/vmware
+ln -s ../..%{_libdir}/vmware/lib/icu $RPM_BUILD_ROOT%{_sysconfdir}/vmware/icu
 install -d $RPM_BUILD_ROOT%{_libdir}/vmware/{modules,roms}
 cp -p bundles/vmware-vmx/extra/modules.xml $RPM_BUILD_ROOT%{_libdir}/vmware/modules
 cp -pr bundles/vmware-vmx/roms/* $RPM_BUILD_ROOT%{_libdir}/vmware/roms
 for f in vmware-{modconfig,modconfig-console,gksu,vmblock-fuse} ; do
 	ln -sf appLoader $RPM_BUILD_ROOT%{_libdir}/vmware/bin/$f
 done
+
+# TODO: adapt and package init.d files:
+# bundles/vmware-usbarbitrator/etc/init.d/vmware-USBArbitrator
+# bundles/vmware-vmx/etc/init.d/vmware
 
 # for autoreq to work
 chmod 755 $RPM_BUILD_ROOT%{_libdir}/vmware/lib/lib*/lib*.so*
@@ -253,7 +261,6 @@ chmod 755 $RPM_BUILD_ROOT%{_libdir}/vmware/lib/lib*/lib*.so*
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libgcc_s.so.1,libstdc++.so.6}
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/{libgcrypt.so.20,libgpg-error.so.0,libtasn1.so.6}
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libaio.so.1
-%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libcurl.so.4
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libdbus-1.so.3
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libexpat.so.1
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libfontconfig.so.1
@@ -269,6 +276,11 @@ chmod 755 $RPM_BUILD_ROOT%{_libdir}/vmware/lib/lib*/lib*.so*
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libtiff.so.5
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libxml2.so.2
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/vmware/lib/libz.so.1
+
+install -d $RPM_BUILD_ROOT{/var/run/vmware,%{systemdtmpfilesdir}}
+cat >$RPM_BUILD_ROOT%{systemdtmpfilesdir}/VMware-player.conf <<EOF
+d /var/run/vmware 0755 root root -
+EOF
 
 # configuration
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/vmware
@@ -287,15 +299,37 @@ INITSCRIPTDIR=/etc/rc.d/init.d
 EOF
 
 cat >$RPM_BUILD_ROOT%{_sysconfdir}/vmware/config <<'EOF'
-libdir=%{_libdir}/vmware
+libdir="%{_libdir}/vmware"
+bindir="%{_bindir}"
+authd.fullpath="%{_sbindir}/vmware-authd"
+EOF
+
+cat >$RPM_BUILD_ROOT%{_sysconfdir}/vmware/networking <<EOF
+VERSION=1,0
+answer VNET_1_DHCP yes
+answer VNET_1_DHCP_CFG_HASH CE242E938515A79D6691EB455951662082636941
+answer VNET_1_HOSTONLY_NETMASK 255.255.255.0
+answer VNET_1_HOSTONLY_SUBNET 172.16.198.0
+answer VNET_1_VIRTUAL_ADAPTER yes
+answer VNET_8_DHCP yes
+answer VNET_8_DHCP_CFG_HASH 4C5787A6BB34F84E90B209824FA80FF17713C192
+answer VNET_8_HOSTONLY_NETMASK 255.255.255.0
+answer VNET_8_HOSTONLY_SUBNET 192.168.242.0
+answer VNET_8_NAT yes
+answer VNET_8_VIRTUAL_ADAPTER yes
 EOF
 %endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post
+/sbin/ldconfig
+%update_icon_cache hicolor
+
+%postun
+/sbin/ldconfig
+%update_icon_cache hicolor
 
 %post	-n kernel%{_alt_kernel}-misc-vmmon
 %depmod %{_kernel_ver}
@@ -389,6 +423,8 @@ rm -rf $RPM_BUILD_ROOT
 # openssl 1.0.2X
 %attr(755,root,root) %{_libdir}/vmware/lib/libcrypto.so.1.0.2
 %attr(755,root,root) %{_libdir}/vmware/lib/libssl.so.1.0.2
+# curl linked with openssl 1.0.2X (mixing openssl versions with system libs causes SIGSEGV)
+%attr(755,root,root) %{_libdir}/vmware/lib/libcurl.so.4
 # libffi >= 3.0.11 < 3.2
 %attr(755,root,root) %{_libdir}/vmware/lib/libffi.so.6
 # libsigc++ 2.x, atkmm, cairomm, glibmm, gtkmm 3.x, pangomm built with pre-C++11 ABI
@@ -419,6 +455,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/vmware/vnckeymap
 %{_libdir}/vmware/xkeymap
 %{_libdir}/vmware/vixwrapper-product-config.txt
+# EULA files required to start (don't mark as doc!)
+%dir %{_prefix}/lib/vmware-ovftool
+%{_prefix}/lib/vmware-ovftool/vmware.eula
+%dir %{_docdir}/vmware-player
+%{_docdir}/vmware-player/EULA
 %{_datadir}/appdata/vmware-player.appdata.xml
 %{_desktopdir}/vmware-player.desktop
 %{_iconsdir}/hicolor/*x*/apps/vmware-player.png
@@ -430,6 +471,10 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sysconfdir}/vmware
 %{_sysconfdir}/vmware/bootstrap
 %{_sysconfdir}/vmware/config
+%{_sysconfdir}/vmware/icu
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vmware/networking
+%dir /var/run/vmware
+%{systemdtmpfilesdir}/VMware-player.conf
 
 # cups
 %{_sysconfdir}/cups/thnuclnt.convs
