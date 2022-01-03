@@ -302,6 +302,7 @@ cat >$RPM_BUILD_ROOT%{_sysconfdir}/vmware/config <<'EOF'
 libdir="%{_libdir}/vmware"
 bindir="%{_bindir}"
 authd.fullpath="%{_sbindir}/vmware-authd"
+NETWORKING="yes"
 EOF
 
 cat >$RPM_BUILD_ROOT%{_sysconfdir}/vmware/networking <<EOF
@@ -470,7 +471,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/mime/packages/vmware-player.xml
 %dir %{_sysconfdir}/vmware
 %{_sysconfdir}/vmware/bootstrap
-%{_sysconfdir}/vmware/config
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vmware/config
 %{_sysconfdir}/vmware/icu
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vmware/networking
 %dir /var/run/vmware
